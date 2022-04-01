@@ -145,7 +145,8 @@ def check_between_zero_and_one(num):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description = "Juno-SNP pipeline. Automated pipeline for SNP analysis."
+        description = "Juno-SNP pipeline. Automated pipeline for SNP analysis.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
         "-i",
