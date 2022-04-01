@@ -1,0 +1,21 @@
+Bootstrap: docker
+From: python:3.10
+
+%labels
+    Autor "Alejandra Hernández Segura"
+    Description "Image with pandas and NCBI API for python 3.10"
+
+%post
+    apt-get update -y
+    pip install wheel
+    pip install pandas
+    pip install --upgrade ncbi-datasets-pylib
+
+
+%runscript
+    /bin/bash $@
+
+%startscript
+    /bin/bash $@
+
+

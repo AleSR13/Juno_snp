@@ -1,0 +1,12 @@
+# Folders to ignore
+envs/src/
+db_snp/
+.snakemake/
+__pycache__/
+output/
+.parallel/
+
+# Files to ignore
+*.sif
+sample_sheet.yaml
+user_parameters.yaml
