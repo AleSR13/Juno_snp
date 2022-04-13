@@ -11,9 +11,10 @@ Date: 07-03-2022
 
 from yaml import safe_load
 import pathlib
+from shutil import copyfile
 
 #################################################################################
-#####     Load samplesheet, load genus dict and define output directory     #####
+#####                   Load samplesheet and config params                  #####
 #################################################################################
 
 # Loading sample sheet as dictionary 
@@ -22,6 +23,8 @@ sample_sheet = config["sample_sheet"]
 SAMPLES = {}
 with open(sample_sheet) as sample_sheet_file:
     SAMPLES = safe_load(sample_sheet_file) 
+
+GIVEN_REF=config['ref']
 
 #@################################################################################
 #@####                         Expected output                               #####
@@ -33,6 +36,12 @@ mash_db = db_dir.joinpath('bacteria-refseq', 'db.msh')
 referenceseeker_md5 = str(db_dir.joinpath('bacteria-refseq', 'downloaded_db.txt'))
 scores_refseq_candidates = output_dir.joinpath('ref_genome_used', 'scores_refseq_candidates.csv')
 ref_genome = output_dir.joinpath('ref_genome_used', 'ref_genome.fasta')
+
+if GIVEN_REF is not None:
+    output_dir.mkdir(exist_ok=True)
+    ref_dir = ref_genome.parent
+    ref_dir.mkdir(exist_ok=True)
+    copyfile(GIVEN_REF, ref_genome)
 
 #@################################################################################
 #@####                              Processes                                #####
@@ -48,6 +57,10 @@ include: "bin/rules/dm_n_viz.smk"
 
 onerror:
     shell("""
+rm -f tmp*npy
+rm -f tmp*_fastme_stat.txt
+rm -f tmp*_fastme_tree.nwk
+rm -f tmp*dist.list
 echo -e "Something went wrong with Juno-SNP pipeline. Please check the logging files in {output_dir}/log/"
     """)
 
@@ -61,8 +74,6 @@ localrules:
 
 rule all:
     input:
-        referenceseeker_md5,
-        scores_refseq_candidates,
         ref_genome,
         expand(
             output_dir.joinpath('snp_analysis', '{sample}', 'snps.tab'), 

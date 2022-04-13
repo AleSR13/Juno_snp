@@ -24,6 +24,7 @@ class JunoSnpRun(
     
     def __init__(self, 
                 input_dir, 
+                ref,
                 output_dir, 
                 db_dir='/mnt/db/juno/snp',
                 ani=0.95,
@@ -43,6 +44,10 @@ class JunoSnpRun(
         
         # Get proper file paths
         output_dir = pathlib.Path(output_dir).resolve()
+        if ref is not None:
+            self.ref = pathlib.Path(ref).resolve()
+        else:
+            self.ref = None
         self.db_dir = pathlib.Path(db_dir).resolve()
         self.ani_threshold=float(ani)
         self.conserved_dna_threshold=float(conserved_dna)
@@ -73,8 +78,8 @@ class JunoSnpRun(
             usesingularity=run_in_container,
             singularityargs=f"--bind {self.input_dir}:{self.input_dir} --bind {output_dir}:{output_dir} --bind {self.db_dir}:{self.db_dir}",
             singularity_prefix=prefix,
-            restarttimes=0, #TODO: Change to 1
-            latency_wait=1, #TODO: Change to 60
+            restarttimes=1,
+            latency_wait=60,
             name_snakemake_report=str(self.path_to_audit.joinpath('juno_snp_report.html')),
             **kwargs
         )
@@ -94,6 +99,7 @@ class JunoSnpRun(
 
         config_params = {
             'input_dir': str(self.input_dir),
+            'ref': self.ref,
             'out': str(self.output_dir),
             'db_dir': str(self.db_dir),
             'referenceseeker': {
@@ -155,6 +161,14 @@ if __name__ == '__main__':
         required = True,
         metavar = "DIR",
         help = "Relative or absolute path to the input directory. It must either be the output directory of the Juno-assembly pipeline or it must contain all the raw reads (fastq) and assemblies (fasta) files for all samples to be processed."
+    )
+    parser.add_argument(
+        "-r",
+        "--reference",
+        type = pathlib.Path,
+        required = False,
+        metavar = "FILE",
+        help = "Relative or absolute path to a reference fasta file."
     )
     parser.add_argument(
         "-o",
@@ -269,6 +283,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     JunoSnpRun(
         input_dir=args.input, 
+        ref=args.reference,
         output_dir=args.output,
         db_dir=args.db_dir,
         ani=args.ani,

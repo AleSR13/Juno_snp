@@ -36,12 +36,13 @@ def append_all_referenceseeker_res(file_list):
 def score_candidates(file_list):
     df_all = append_all_referenceseeker_res(file_list)
     candidates = df_all.groupby('#ID')[['ANI', 'Mash Distance', 'Con. DNA']]\
-        .mean()\
-        .sort_values(
-            by=['ANI', 'Mash Distance', 'Con. DNA'], 
-            ascending=[False,True,False]
+        .agg(['mean', 'size'])
+    candidates.columns = ['_'.join(head) for head in candidates.columns]
+    candidates = candidates.sort_values(
+            by=['ANI_size', 'ANI_mean', 'Con. DNA_mean', 'Mash Distance_mean'], 
+            ascending=[False, False, False, True]
         )
-    return candidates
+    return candidates[['ANI_size', 'ANI_mean', 'Con. DNA_mean', 'Mash Distance_mean']]
 
 
 def get_best_hit(candidates_df):
