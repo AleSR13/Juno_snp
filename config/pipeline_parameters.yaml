@@ -4,10 +4,10 @@ threads:
   referenceseeker: 6
   mash: 4
   snippy: 8
-  grapetree: 10
+  vcfkit: 1
 mem_gb:
   other: 8
   referenceseeker: 16
   mash: 12
   snippy: 20
-  grapetree: 20
+  vcfkit: 20

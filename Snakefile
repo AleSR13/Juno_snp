@@ -35,9 +35,13 @@ db_dir = pathlib.Path(config["db_dir"])
 mash_db = db_dir.joinpath('bacteria-refseq', 'db.msh')
 referenceseeker_md5 = str(db_dir.joinpath('bacteria-refseq', 'downloaded_db.txt'))
 scores_refseq_candidates = output_dir.joinpath('ref_genome_used', 'scores_refseq_candidates.csv')
-ref_genome = output_dir.joinpath('ref_genome_used', 'ref_genome.fasta')
 
-if GIVEN_REF is not None:
+if config['dryrun'] is True and GIVEN_REF is not None:
+    ref_genome = GIVEN_REF
+else:
+    ref_genome = output_dir.joinpath('ref_genome_used', 'ref_genome.fasta')
+
+if GIVEN_REF is not None and not ref_genome.exists():
     output_dir.mkdir(exist_ok=True)
     ref_dir = ref_genome.parent
     ref_dir.mkdir(exist_ok=True)
@@ -79,8 +83,8 @@ rule all:
             output_dir.joinpath('snp_analysis', '{sample}', 'snps.tab'), 
             sample=SAMPLES
         ),
-        output_dir.joinpath('snp_analysis', 'core_snps.tab'),
-        output_dir.joinpath('tree', 'distance_matrix.tab'),
+        output_dir.joinpath('snp_analysis', 'core_snps.vcf'),
+        output_dir.joinpath('tree', 'distance_matrix.csv'),
         output_dir.joinpath('tree', 'newick_tree.txt')
         
 

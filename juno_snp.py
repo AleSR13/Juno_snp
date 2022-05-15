@@ -107,7 +107,8 @@ class JunoSnpRun(
                 'ani_threshold': self.ani_threshold,
                 'conserved_dna_threshold': self.conserved_dna_threshold,
                 'sliding_window': self.sliding_window
-            }
+            },
+            'dryrun': self.dryrun
         }
         
         with open(self.user_parameters, 'w') as file_:
