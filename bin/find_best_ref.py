@@ -1,8 +1,10 @@
+import imp
 import pandas as pd
 import pathlib
 import argparse
 import sys
 import zipfile
+import subprocess
 
 from ncbi.datasets.openapi import ApiClient as DatasetsApiClient
 from ncbi.datasets.openapi import ApiException as DatasetsApiException
@@ -25,7 +27,13 @@ def append_all_referenceseeker_res(file_list):
     res_referenceseeker = []
     for file_ in file_list:
         sample_name = file_.stem.replace('referenceseeker_', '')
-        sample_res = pd.read_csv(file_, skiprows=18, sep='\t', index_col=None, header=0)
+        rows_to_skip = subprocess.check_output(
+            f'grep -n "#ID" {file_} | cut -d : -f 1', shell=True
+        )
+        rows_to_skip = int(rows_to_skip) - 1
+        sample_res = pd.read_csv(
+            file_, skiprows=rows_to_skip, sep='\t', index_col=None, header=0
+        )
         sample_res = sample_res[['#ID', 'ANI', 'Mash Distance', 'Con. DNA']]
         sample_res['Sample'] = sample_name
         res_referenceseeker.append(sample_res)
@@ -38,11 +46,12 @@ def score_candidates(file_list):
     candidates = df_all.groupby('#ID')[['ANI', 'Mash Distance', 'Con. DNA']]\
         .agg(['mean', 'size'])
     candidates.columns = ['_'.join(head) for head in candidates.columns]
+    imp_cols = ['ANI_size', 'ANI_mean', 'Con. DNA_mean', 'Mash Distance_mean']
     candidates = candidates.sort_values(
-            by=['ANI_size', 'ANI_mean', 'Con. DNA_mean', 'Mash Distance_mean'], 
+            by=imp_cols, 
             ascending=[False, False, False, True]
         )
-    return candidates[['ANI_size', 'ANI_mean', 'Con. DNA_mean', 'Mash Distance_mean']]
+    return candidates[imp_cols]
 
 
 def get_best_hit(candidates_df):
@@ -69,7 +78,9 @@ def download_from_ncbi(accession_nr, output_dir):
                 f.write(genome_ds_download.data)
             print(f"Download completed -- see {zipfile_name}")
         except DatasetsApiException as e:
-            sys.exit(f"Exception when calling download_assembly_package: {e}\n")
+            sys.exit(
+                f"Exception when calling download_assembly_package: {e}\n"
+            )
     with zipfile.ZipFile(zipfile_name, 'r') as zip_ref:
         zip_ref.extractall(output_dir)
     for item in output_dir.joinpath('ncbi_dataset', 'data').glob('**/*.fna'):

@@ -5,6 +5,7 @@ db_snp/
 __pycache__/
 output/
 .parallel/
+.pytest_cache
 
 # Files to ignore
 *.sif
