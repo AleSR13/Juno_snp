@@ -63,26 +63,69 @@ conda env update -f envs/master_env.yaml
 
 ### Optional parameters
 
-* ```-o --output``` Directory (if not existing it will be created) where the output of the pipeline will be collected. The default behavior is to create a folder called 'output' within the pipeline directory. 
-* ```-d --db_dir``` Directory (if not existing it will be created) where the databases used by this pipeline will be downloaded or where they are expected to be present. Default is '/mnt/db/juno/typing_db' (internal RIVM path to the databases of the Juno pipelines). It is advisable to provide your own path if you are not working inside the RIVM Linux environment.
-* `-a --ani` ANI threshold. Passed to referenceseeker. Default: 0.95
-* `-cd INT, --conserved-dna` Conserved DNA threshold. Passed to referenceseeker. Default: 0.69
-* `-sw --sliding-window` Sliding window - the lower the more accurate but also slower. Passed to referenceseeker. Default: 400
-* `--no-containers` Use conda environments instead of containers. Use this option if you don't have singularity installed
-* `-p --prefix` Conda or singularity prefix. Path to the place where you want to store the conda environments or the singularity images.
-* `-c --cores` Number of cores to use. Default is 300
-* `-q --queue` Name of the queue that the job will be submitted to if working on a cluster.
-* `-l --local` Running pipeline locally (instead of in a computer cluster). Default is running it in a cluster.
-* `-w --time-limit` Time limit per job in minutes (passed as -W argument to bsub). Jobs will be killed if not finished in this time. Default: 60
-* `-u --unlock` Unlock output directory (passed to snakemake).
-* `-n --dryrun` Dry run printing steps to be taken in the pipeline without actually running it (passed to snakemake).
-* `--rerunincomplete` Re-run jobs if they are marked as incomplete (passed to snakemake).
-* `--snakemake-args` Extra arguments to be passed to [snakemake API](https://snakemake.readthedocs.io/en/stable/api_reference/snakemake.html).
+```
+  -i DIR, --input DIR   Relative or absolute path to the input directory. It must
+                        either be the output directory of the Juno-assembly pipeline
+                        or it must contain all the raw reads (fastq) and assemblies
+                        (fasta) files for all samples to be processed. (default:
+                        None)
+  -r FILE, --reference FILE
+                        Relative or absolute path to a reference fasta file.
+                        (default: None)
+  -o DIR, --output DIR  Relative or absolute path to the output directory. If non is
+                        given, an 'output' directory will be created in the current
+                        directory. (default: output)
+  -d DIR, --db-dir DIR  Relative or absolute path to the database directory. If non
+                        is given, /mnt/db/juno/snp (where the default db resides at
+                        the RIVM will be used). (default: /mnt/db/juno/snp)
+  -a INT, --ani INT     ANI threshold. Passed to referenceseeker (default: 0.95)
+  -cd INT, --conserved-dna INT
+                        Conserved DNA threshold. Passed to referenceseeker (default:
+                        0.69)
+  -sw INT, --sliding-window INT
+                        Sliding window - the lower the more accurate but also slower.
+                        Passed to referenceseeker (default: 400)
+  -t ALGORITHM, --tree-algorithm ALGORITHM
+                        Algorithm to use for making the tree. It can be 'upgma' or
+                        'nj' (neighbor-joining). Default is upgma (default: upgma)
+  --no-containers       Use conda environments instead of containers. (default: True)
+  -p PATH, --prefix PATH
+                        Conda or singularity prefix. Path to the place where you want
+                        to store the conda environments or the singularity images.
+                        (default: None)
+  -c INT, --cores INT   Number of cores to use. Default is 300 (default: 300)
+  -q STR, --queue STR   Name of the queue that the job will be submitted to if
+                        working on a cluster. (default: bio)
+  -l, --local           Running pipeline locally (instead of in a computer cluster).
+                        Default is running it in a cluster. (default: False)
+  -w INT, --time-limit INT
+                        Time limit per job in minutes (passed as -W argument to
+                        bsub). Jobs will be killed if not finished in this time.
+                        (default: 60)
+  -u, --unlock          Unlock output directory (passed to snakemake). (default:
+                        False)
+  -n, --dryrun          Dry run printing steps to be taken in the pipeline without
+                        actually running it (passed to snakemake). (default: False)
+  --rerunincomplete     Re-run jobs if they are marked as incomplete (passed to
+                        snakemake). (default: False)
+  --snakemake-args [SNAKEMAKE_ARGS ...]
+                        Extra arguments to be passed to snakemake API (https://snakem
+                        ake.readthedocs.io/en/stable/api_reference/snakemake.html).
+                        (default: {})
+```
 
 ### The base command to run this program. 
 
+If you want the pipeline to choose a reference genome for you:
+
 ```
 python juno_snp.py -i [path/to/input_directory] 
+```
+
+If you want to provide your own reference genome:
+
+```
+python juno_snp.py -i [path/to/input_directory] --reference [path/to/reference.fasta]
 ```
 
 ### An example on how to run the pipeline.

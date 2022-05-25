@@ -30,6 +30,7 @@ class JunoSnpRun(
                 ani=0.95,
                 conserved_dna=0.69,
                 sliding_window=400,
+                tree_algorithm='upgma',
                 cores=300,
                 time_limit=60,
                 local=False,
@@ -52,6 +53,12 @@ class JunoSnpRun(
         self.ani_threshold=float(ani)
         self.conserved_dna_threshold=float(conserved_dna)
         self.sliding_window=int(sliding_window)
+        if tree_algorithm not in ['upgma', 'nj']:
+            raise ValueError(
+                f'The provided tree algorithm {tree_algorithm} is not supported.' \
+                ' Please choose upgma or nj'
+            )
+        self.tree_algorithm=tree_algorithm
         workdir = pathlib.Path(__file__).parent.resolve()
         self.path_to_audit = output_dir.joinpath('audit_trail')
         base_juno_pipeline.PipelineStartup.__init__(
@@ -108,6 +115,9 @@ class JunoSnpRun(
                 'conserved_dna_threshold': self.conserved_dna_threshold,
                 'sliding_window': self.sliding_window
             },
+            'tree': {
+                'algorithm' : self.tree_algorithm
+            },
             'dryrun': self.dryrun
         }
         
@@ -126,8 +136,12 @@ class JunoSnpRun(
         self.successful_run = self.run_snakemake()
         assert self.successful_run, f'Please check the log files'
         if not self.dryrun or self.unlock:
-            subprocess.run(['find', self.output_dir, '-type', 'f', '-empty', '-exec', 'rm', '{}', ';'])
-            subprocess.run(['find', self.output_dir, '-type', 'd', '-empty', '-exec', 'rm', '-rf', '{}', ';'])
+            subprocess.run(
+                ['find', self.output_dir, '-type', 'f', '-empty', '-exec', 'rm', '{}', ';']
+            )
+            subprocess.run(
+                ['find', self.output_dir, '-type', 'd', '-empty', '-exec', 'rm', '-rf', '{}', ';']
+            )
             self.make_snakemake_report()
 
 def check_sliding_window(num):
@@ -213,6 +227,15 @@ if __name__ == '__main__':
         help="Sliding window - the lower the more accurate but also slower. Passed to referenceseeker"
     )
     parser.add_argument(
+        "-t",
+        "--tree-algorithm",
+        type = str,
+        metavar = "ALGORITHM",
+        default = 'upgma',
+        choices=['upgma', 'nj'],
+        help="Algorithm to use for making the tree. It can be 'upgma' or 'nj' (neighbor-joining). Default is upgma"
+    )
+    parser.add_argument(
         "--no-containers",
         action = 'store_false',
         help = "Use conda environments instead of containers."
@@ -290,6 +313,7 @@ if __name__ == '__main__':
         ani=args.ani,
         conserved_dna=args.conserved_dna,
         sliding_window=args.sliding_window,
+        tree_algorithm=args.tree_algorithm,
         cores=args.cores,
         local=args.local,
         time_limit=args.time_limit,

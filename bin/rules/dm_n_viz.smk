@@ -9,10 +9,11 @@ rule make_tree:
     threads: config['threads']['vcfkit']
     resources: mem_gb=config['mem_gb']['vcfkit']
     params:
-        dm = output_dir.joinpath('tree', 'distance_matrix.tab')
+        dm = output_dir.joinpath('tree', 'distance_matrix.tab'),
+        algorithm = config['tree']['algorithm']
     shell:
         """
-vk phylo tree upgma {input} > {output.tree} 2> {log}
+vk phylo tree {params.algorithm} {input} > {output.tree} 2> {log}
         """
 
 

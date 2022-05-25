@@ -49,31 +49,6 @@ referenceseeker --ani {params.ani_threshold} \
         """
 
 
-# rule mash:
-#     input:
-#         r1 = lambda wildcards: SAMPLES[wildcards.sample]["R1"],
-#         r2 = lambda wildcards: SAMPLES[wildcards.sample]["R2"],
-#         mash_db = db_dir.joinpath('bacteria-refseq', 'db.msh')
-#     output:
-#         fastq = temp(output_dir.joinpath('mash', '{sample}_interleaved.fastq')),
-#         msh = temp(output_dir.joinpath('mash', '{sample}_interleaved.fastq.msh')),
-#         res = output_dir.joinpath('mash', 'mash_{sample}.tab')
-#     message: "Running mash against refseq."
-#     log:
-#         log_dir.joinpath('mash', '{sample}.log')
-#     container: 'docker://quay.io/biocontainers/mash:2.3--hb340e26_2'
-#     threads: config['threads']['mash']
-#     resources: mem_gb=config['mem_gb']['mash']
-#     params:
-#         out_dir = output_dir.joinpath('mash')
-#     shell:
-#         """
-# cd {params.out_dir}
-# zcat {input.r1} {input.r2} > "{output.fastq}"
-# mash sketch -m 2 "{output.fastq}" 2> {log}
-# mash dist {input.mash_db} "{output.msh}" > {output.res} 2> {log}
-#         """
-
 rule get_best_ref:
     input: expand(output_dir.joinpath('find_reference', 'referenceseeker_{sample}.tab'), sample=SAMPLES)
     output: 
