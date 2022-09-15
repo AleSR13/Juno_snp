@@ -1,5 +1,5 @@
 <div align="center">
-    <h1>Juno SNP</h1>
+    <h1>Juno-SNP</h1>
     <br />
     <h2>SNP analysis pipeline.</h2>
     <br />
