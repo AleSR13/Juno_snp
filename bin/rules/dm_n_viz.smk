@@ -2,7 +2,9 @@ rule make_tree:
     input: output_dir.joinpath('snp_analysis', 'core_snps.vcf')
     output: 
         tree = output_dir.joinpath('tree', 'newick_tree.txt')
-    container: "docker://andersenlab/vcf-kit:20200822175018b7b60d"
+    #container: "docker://andersenlab/vcf-kit:20200822175018b7b60d"
+    conda:
+        "../../envs/grapetree.yaml"
     message: "Making tree..."
     log:
         log_dir.joinpath('making_tree.log')

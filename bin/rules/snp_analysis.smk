@@ -8,7 +8,9 @@ rule snp_analysis:
     message: "Running snippy on sample {wildcards.sample}."
     log:
         log_dir.joinpath('snp_analysis', 'snippy_{sample}.log')
-    container: 'docker://staphb/snippy:4.6.0-SC2'
+    #container: 'docker://staphb/snippy:4.6.0-SC2'
+    conda:
+        "../../envs/snippy.yaml"  
     threads: config['threads']['snippy']
     resources: mem_gb=config['mem_gb']['snippy']
     params:
@@ -45,7 +47,9 @@ rule snp_core:
     message: "Getting SNP core."
     log:
         log_dir.joinpath('snp_analysis', 'snippy_core.log')
-    container: 'docker://staphb/snippy:4.6.0-SC2'
+    conda:
+        "../../envs/snippy.yaml"
+    #container: 'docker://staphb/snippy:4.6.0-SC2'
     threads: config['threads']['snippy']
     resources: mem_gb=config['mem_gb']['snippy']
     params:

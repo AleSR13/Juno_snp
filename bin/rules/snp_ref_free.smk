@@ -7,7 +7,9 @@ rule snp_analysis:
     message: "Running reference-free SNP analysis."
     log:
         log_dir.joinpath('snp_analysis', 'snippy_{sample}.log')
-    container: 'docker://biocontainers/parsnp:v1.2dfsg-5-deb_cv1'
+    #container: 'docker://biocontainers/parsnp:v1.2dfsg-5-deb_cv1'
+    conda:
+        "../../envs/snippy.yaml"
     threads: config['threads']['snippy']
     resources: mem_gb=config['mem_gb']['snippy']
     params:

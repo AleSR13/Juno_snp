@@ -30,7 +30,9 @@ rule find_reference:
     message: "Running referenceseeker for sample {wildcards.sample}."
     log:
         log_dir.joinpath('referenceseeker', '{sample}.log')
-    container: 'docker://pvstodghill/referenceseeker:1.8.0__2022-01-31'
+    conda:
+        "../../envs/reference_seeker_env.yaml"
+    #container: 'docker://pvstodghill/referenceseeker:1.8.0__2022-01-31'
     threads: config['threads']['referenceseeker']
     resources: mem_gb=config['mem_gb']['referenceseeker']
     params:
@@ -57,7 +59,9 @@ rule get_best_ref:
     message: "Finding best reference genome for dataset."
     log:
         log_dir.joinpath('find_reference.log')
-    container: 'oras://ghcr.io/alesr13/pandas_ncbidatasets:v0.1'
+    conda:
+        "../../envs/reference_seeker_env.yaml"    
+    #container: 'oras://ghcr.io/alesr13/pandas_ncbidatasets:v0.1'
     threads: config['threads']['other']
     resources: mem_gb=config['mem_gb']['other']
     params:
