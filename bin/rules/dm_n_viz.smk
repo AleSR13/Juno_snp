@@ -47,9 +47,7 @@ rule get_snp_matrix:
         log_dir.joinpath("snp_matrix.log")
     threads: config['threads']['other']
     resources: mem_gb=config['mem_gb']['other']
-    params:
-        format = config['get_snp_matrix']['format']
     shell:
         '''
-        snp-dists {params.format} {input} 1>{output.snp_matrix} 2>{log}
+        snp-dists -c {input} 1>{output.snp_matrix} 2>{log}
         '''

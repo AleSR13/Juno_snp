@@ -85,7 +85,8 @@ rule all:
         ),
         output_dir.joinpath('snp_analysis', 'core_snps.vcf'),
         output_dir.joinpath('tree', 'distance_matrix.csv'),
-        output_dir.joinpath('tree', 'newick_tree.txt')
+        output_dir.joinpath('tree', 'newick_tree.txt'),
+        output_dir.joinpath('tree', 'snp_matrix.csv'),
         
 
 
