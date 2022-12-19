@@ -37,7 +37,7 @@ python bin/newick2dm.py -i {input} -o {output}
 
 rule get_snp_matrix:
     input:
-        output_dir.joinpath("snp_analysis", "core.full.aln")
+        output_dir.joinpath("snp_analysis", "core_snps.full.aln")
     output:
         snp_matrix = output_dir.joinpath("tree", "snp_matrix.csv")
     conda:
