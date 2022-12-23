@@ -51,6 +51,7 @@ if GIVEN_REF is not None and not ref_genome.exists():
 #@####                              Processes                                #####
 #@################################################################################
 
+include: "bin/rules/pre_cluster.smk"
 include: "bin/rules/find_reference.smk"
 include: "bin/rules/snp_analysis.smk"
 include: "bin/rules/dm_n_viz.smk"
@@ -87,6 +88,5 @@ rule all:
         output_dir.joinpath('tree', 'distance_matrix.csv'),
         output_dir.joinpath('tree', 'newick_tree.txt'),
         output_dir.joinpath('tree', 'snp_matrix.csv'),
-        
-
+        output_dir.joinpath('preclustering', 'clusters.yaml')
 

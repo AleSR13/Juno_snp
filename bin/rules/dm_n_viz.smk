@@ -18,8 +18,6 @@ rule make_tree:
 vk phylo tree {params.algorithm} {input} > {output.tree} 2> {log}
         """
 
-
-
 rule get_dm:
     input: output_dir.joinpath('tree', 'newick_tree.txt')
     output: output_dir.joinpath('tree', 'distance_matrix.csv')
