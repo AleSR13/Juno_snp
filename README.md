@@ -85,6 +85,12 @@ conda env update -f envs/master_env.yaml
   -sw INT, --sliding-window INT
                         Sliding window - the lower the more accurate but also slower.
                         Passed to referenceseeker (default: 400)
+  -kl INT, --kmer-length INT
+                        K-mer length - longer kmers increase specificity, shorter kmers increase sensitivity. Passed to mash sketch (default: 21)
+  -ss INT, --sketch-size INT
+                        Sketch size - larger sketch size better represents the original sequence, but leads to large files and longer running time. Passed to mash sketch (default: 1000)
+  -mt FLOAT, --mash-threshold FLOAT
+                        Mash threshold - maximum mash distance to consider genomes similar. Passed to preclustering script. (default: 0.01)
   -t ALGORITHM, --tree-algorithm ALGORITHM
                         Algorithm to use for making the tree. It can be 'upgma' or
                         'nj' (neighbor-joining). Default is upgma (default: upgma)
@@ -116,13 +122,17 @@ conda env update -f envs/master_env.yaml
 
 ### The base command to run this program. 
 
-If you want the pipeline to choose a reference genome for you:
+If you want the pipeline to choose a reference genome for you, run the command below.
+
+By default, genomes will be clustered using `mash` and genomes that are too different are split into separate clusters.
+Mapping will subsequently be performed per cluster. This prevents isolates that are too diverse to be compared.
 
 ```
 python juno_snp.py -i [path/to/input_directory] 
 ```
 
-If you want to provide your own reference genome:
+If you want to provide your own reference genome, specify this with `--reference`.
+This will force all isolates to be mapped against the provided reference genome.
 
 ```
 python juno_snp.py -i [path/to/input_directory] --reference [path/to/reference.fasta]
