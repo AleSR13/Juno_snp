@@ -32,7 +32,7 @@ class JunoSnpRun(
                 sliding_window=400,
                 kmer_length=21,
                 sketch_size=1000,
-                mash_threshold=0.001,
+                mash_threshold=0.01,
                 tree_algorithm='upgma',
                 cores=300,
                 time_limit=60,
@@ -269,7 +269,7 @@ if __name__ == '__main__':
         "--mash-threshold",
         type = check_between_zero_and_one,
         metavar = "FLOAT",
-        default = 0.001,
+        default = 0.01,
         help="Mash threshold - maximum mash distance to consider genomes similar. Passed to preclustering script."
     )
     parser.add_argument(
