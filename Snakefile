@@ -39,33 +39,40 @@ referenceseeker_md5 = str(db_dir.joinpath('bacteria-refseq', 'downloaded_db.txt'
 if config['dryrun'] is True and GIVEN_REF is not None:
     ref_genome = GIVEN_REF
 else:
-    ref_genome = output_dir.joinpath('ref_genomes_used', 'cluster_{cluster}')
+    ref_genome = output_dir.joinpath('ref_genomes_used', 'cluster_1', 'ref_genome.fasta')
 
 if GIVEN_REF is not None and not ref_genome.exists():
-    output_dir.mkdir(exist_ok=True)
+    output_dir.mkdir(exist_ok=True, parents=True)
     ref_dir = ref_genome.parent
-    ref_dir.mkdir(exist_ok=True)
+    ref_dir.mkdir(exist_ok=True, parents=True)
     copyfile(GIVEN_REF, ref_genome)
     ## Force mapping of all samples on GIVEN_REF in this case
 
-def get_vcf_clusters(cluster):
+def get_output_per_cluster(cluster):
     with open(checkpoints.preclustering.get(**cluster).output[0]) as file:
         SAMPLE_CLUSTERS = yaml.safe_load(file)
     CLUSTERS = set([ cluster for sample, cluster in SAMPLE_CLUSTERS.items() ])
-    return expand(output_dir.joinpath('snp_analysis', 'snippy-core', 'cluster_{cluster}', 'core_snps.vcf'), cluster=CLUSTERS)
+    output_files = expand(output_dir.joinpath('tree/cluster_{cluster}/{file}'),
+                    cluster=CLUSTERS,
+                    file=['newick_tree.txt', 'snp_matrix.csv'])
+    return output_files
 
-def get_tree_clusters(cluster):
-    with open(checkpoints.preclustering.get(**cluster).output[0]) as file:
-        SAMPLE_CLUSTERS = yaml.safe_load(file)
-    CLUSTERS = set([ cluster for sample, cluster in SAMPLE_CLUSTERS.items() ])
-    return expand(output_dir.joinpath('tree/cluster_{cluster}/newick_tree.txt'), cluster=CLUSTERS)
+# def get_snpmat_per_cluster(cluster):
+#     with open(checkpoints.preclustering.get(**cluster).output[0]) as file:
+#         SAMPLE_CLUSTERS = yaml.safe_load(file)
+#     CLUSTERS = set([ cluster for sample, cluster in SAMPLE_CLUSTERS.items() ])
+#     return expand(output_dir.joinpath('tree/cluster_{cluster}/snp_matrix.csv'), cluster=CLUSTERS)
 
 #@################################################################################
 #@####                              Processes                                #####
 #@################################################################################
 
-include: "bin/rules/pre_cluster.smk"
-include: "bin/rules/find_reference.smk"
+if GIVEN_REF is not None:
+    include: "bin/rules/mock_cluster.smk"
+else:
+    include: "bin/rules/pre_cluster.smk"
+    include: "bin/rules/find_reference.smk"
+
 include: "bin/rules/snp_analysis.smk"
 include: "bin/rules/dm_n_viz.smk"
 
@@ -98,10 +105,10 @@ rule all:
         #     sample=SAMPLES
         # ),
         # get_vcf_clusters,
-        get_tree_clusters,
+        get_output_per_cluster,
         # output_dir.joinpath('snp_analysis', 'core_snps.vcf'),
         # output_dir.joinpath('tree', '{cluster}', 'distance_matrix.csv'),
         # output_dir.joinpath('tree', '{cluster}', 'newick_tree.txt'),
         # output_dir.joinpath('tree', '{cluster}', 'snp_matrix.csv'),
-        output_dir.joinpath('preclustering', 'clusters.yaml')
+        # output_dir.joinpath('preclustering', 'clusters.yaml')
 

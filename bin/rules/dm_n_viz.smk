@@ -35,7 +35,7 @@ python bin/newick2dm.py -i {input} -o {output}
 
 rule get_snp_matrix:
     input:
-        output_dir.joinpath("snp_analysis", 'snippy-core', 'cluster_{cluster}', "core_snps.full.aln")
+        output_dir.joinpath("snp_analysis", 'snippy-core', 'cluster_{cluster}')
     output:
         snp_matrix = output_dir.joinpath("tree", 'cluster_{cluster}', "snp_matrix.csv")
     conda:
@@ -45,7 +45,9 @@ rule get_snp_matrix:
         log_dir.joinpath("snp_matrix_cluster_{cluster}.log")
     threads: config['threads']['other']
     resources: mem_gb=config['mem_gb']['other']
+    params:
+        input = lambda wildcards: output_dir.joinpath('snp_analysis', 'snippy-core', f'cluster_{wildcards.cluster}', 'core_snps.full.aln'),
     shell:
         '''
-snp-dists -c {input} 1>{output.snp_matrix} 2>{log}
+snp-dists -c {params.input} 1>{output.snp_matrix} 2>{log}
         '''

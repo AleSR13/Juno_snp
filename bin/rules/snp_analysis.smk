@@ -49,7 +49,7 @@ snippy --cpus {threads} \
         """
 
 
-checkpoint snp_core:
+rule snp_core:
     input: 
         samples = get_mapped_per_cluster,
         ref = output_dir.joinpath("ref_genomes_used/cluster_{cluster}/ref_genome.fasta")
