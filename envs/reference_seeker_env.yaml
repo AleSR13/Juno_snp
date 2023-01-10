@@ -42,6 +42,7 @@ dependencies:
   # - python_abi=3.10=2_cp310
   # - readline=8.1.2=h0f457ee_0
   - referenceseeker==1.8.0
+  - pyyaml
   # - setuptools=65.4.0=pyhd8ed1ab_0
   # - tk=8.6.12=h27826a3_0
   # - tzdata=2022d=h191b570_0

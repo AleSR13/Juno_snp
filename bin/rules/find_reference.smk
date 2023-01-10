@@ -52,21 +52,24 @@ referenceseeker --ani {params.ani_threshold} \
 
 
 rule get_best_ref:
-    input: expand(output_dir.joinpath('find_reference', 'referenceseeker_{sample}.tab'), sample=SAMPLES)
+    input:
+        referenceseeker = expand(output_dir.joinpath('find_reference', 'referenceseeker_{sample}.tab'), sample=SAMPLES),
+        clustering = output_dir.joinpath('preclustering', 'clusters.yaml'),
     output: 
-        scores = scores_refseq_candidates,
-        fasta = ref_genome
+        # scores = scores_refseq_candidates,
+        ref = output_dir.joinpath('ref_genomes_used', 'cluster_{cluster}', 'ref_genome.fasta')
     message: "Finding best reference genome for dataset."
     log:
-        log_dir.joinpath('find_reference.log')
+        log_dir.joinpath('find_reference', '{cluster}.log')
     conda:
         "../../envs/reference_seeker_env.yaml"    
     #container: 'oras://ghcr.io/alesr13/pandas_ncbidatasets:v0.1'
     threads: config['threads']['other']
     resources: mem_gb=config['mem_gb']['other']
     params:
-        output_dir = output_dir.joinpath('ref_genome_used')
+        output_dir = lambda wildcards: output_dir.joinpath('ref_genomes_used', f'cluster_{wildcards.cluster}'),
+        cluster = lambda wildcards: wildcards.cluster
     shell:
         """
-python3 bin/find_best_ref.py --input-files {input} --output {params.output_dir} &> {log}
+python3 bin/find_best_ref.py --input-files {input.referenceseeker} --cluster {params.cluster} --clustering-file {input.clustering} --output {params.output_dir} &> {log}
         """
