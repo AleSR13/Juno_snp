@@ -56,7 +56,6 @@ rule get_best_ref:
         referenceseeker = expand(output_dir.joinpath('find_reference', 'referenceseeker_{sample}.tab'), sample=SAMPLES),
         clustering = output_dir.joinpath('preclustering', 'clusters.yaml'),
     output: 
-        # scores = scores_refseq_candidates,
         ref = output_dir.joinpath('ref_genomes_used', 'cluster_{cluster}', 'ref_genome.fasta')
     message: "Finding best reference genome for dataset."
     log:

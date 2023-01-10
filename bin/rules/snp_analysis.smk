@@ -3,15 +3,10 @@ import yaml
 def get_mapped_per_cluster(cluster):
     with open(checkpoints.preclustering.get(**cluster).output[0]) as file:
         SAMPLE_CLUSTERS = yaml.safe_load(file)
-    # print(SAMPLE_CLUSTERS)
     SELECTED_SAMPLES = []
     for sample, sample_cluster in SAMPLE_CLUSTERS.items():
-        # print(f"comparing sample_cluster {sample_cluster} to cluster {cluster}")
         if str(sample_cluster) == str(cluster):
-            # print("match found")
             SELECTED_SAMPLES.append(sample)
-            # print(f"SELECTED_SAMPLES now contains {SELECTED_SAMPLES}")
-    # print(expand(output_dir.joinpath('snp_analysis', 'cluster_{cluster}', '{sample}'), sample=SELECTED_SAMPLES, allow_missing=True))
     return expand(output_dir.joinpath('snp_analysis', 'cluster_{cluster}', '{sample}'), sample=SELECTED_SAMPLES, allow_missing=True)
 
 rule snp_analysis:

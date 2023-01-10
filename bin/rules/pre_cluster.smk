@@ -15,7 +15,7 @@ rule sketch_genomes:
         sketch_size = config['mash']['sketch_size']
     shell:
         """
-        mash sketch -p {threads} -k {params.kmer_length} -s {params.sketch_size} -o {output} {input} 2>{log}
+mash sketch -p {threads} -k {params.kmer_length} -s {params.sketch_size} -o {output} {input} 2>{log}
         """
 
 rule calculate_mash_distances:
@@ -35,7 +35,7 @@ rule calculate_mash_distances:
         sketch_size = config['mash']['sketch_size']
     shell:
         """
-        mash dist -p {threads} {input} {input} > {output} 2>{log}
+mash dist -p {threads} {input} {input} > {output} 2>{log}
         """
 
 checkpoint preclustering:
@@ -56,6 +56,6 @@ checkpoint preclustering:
         script = srcdir("../../bin/preclustering.py")
     shell:
         """
-        python {params.script} --input {input} --threshold {params.mash_threshold} \
-          --output {output.yaml} --plot-output {output.plot_dir} 2>&1>{log}
+python {params.script} --input {input} --threshold {params.mash_threshold} \
+    --output {output.yaml} --plot-output {output.plot_dir} 2>&1>{log}
         """

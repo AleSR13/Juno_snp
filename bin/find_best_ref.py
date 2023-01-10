@@ -13,10 +13,6 @@ from ncbi.datasets import GenomeApi as DatasetsGenomeApi
 from ncbi.datasets.package import dataset
 
 
-# def join_full_dfs(left, right):
-#     merged = pd.merge(left, right, on='#ID', how='outer')
-#     return merged
-
 def read_clusters(yaml_path : pathlib.Path) -> tuple([dict, set]):
     with open(yaml_path) as file:
         cluster_dict = yaml.safe_load(file)
@@ -149,13 +145,11 @@ def get_user_args():
 def main():
     args = get_user_args()
     cluster_dict = read_clusters(args.clustering_file)
-    # outputdir_cluster = args.output.joinpath(f'cluster_{args.cluster}')
     list_selected_files = select_files_cluster(args.input_files, args.cluster, cluster_dict)
     res = score_candidates(list_selected_files)
     args.output.mkdir(parents=True, exist_ok=True)
     res.to_csv(args.output.joinpath('scores_refseq_candidates.csv'))
     best_hit = get_best_hit(res)
-    # check where to output ref_genome!!
     download_from_ncbi(best_hit, output_dir=args.output)
 
 

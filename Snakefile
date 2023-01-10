@@ -34,7 +34,6 @@ log_dir = output_dir.joinpath('log')
 db_dir = pathlib.Path(config["db_dir"])
 mash_db = db_dir.joinpath('bacteria-refseq', 'db.msh')
 referenceseeker_md5 = str(db_dir.joinpath('bacteria-refseq', 'downloaded_db.txt'))
-#scores_refseq_candidates = output_dir.joinpath('ref_genome_used', 'scores_refseq_candidates.csv')
 
 if config['dryrun'] is True and GIVEN_REF is not None:
     ref_genome = GIVEN_REF
@@ -46,7 +45,6 @@ if GIVEN_REF is not None and not ref_genome.exists():
     ref_dir = ref_genome.parent
     ref_dir.mkdir(exist_ok=True, parents=True)
     copyfile(GIVEN_REF, ref_genome)
-    ## Force mapping of all samples on GIVEN_REF in this case
 
 def get_output_per_cluster(cluster):
     with open(checkpoints.preclustering.get(**cluster).output[0]) as file:
@@ -57,11 +55,6 @@ def get_output_per_cluster(cluster):
                     file=['newick_tree.txt', 'snp_matrix.csv'])
     return output_files
 
-# def get_snpmat_per_cluster(cluster):
-#     with open(checkpoints.preclustering.get(**cluster).output[0]) as file:
-#         SAMPLE_CLUSTERS = yaml.safe_load(file)
-#     CLUSTERS = set([ cluster for sample, cluster in SAMPLE_CLUSTERS.items() ])
-#     return expand(output_dir.joinpath('tree/cluster_{cluster}/snp_matrix.csv'), cluster=CLUSTERS)
 
 #@################################################################################
 #@####                              Processes                                #####
@@ -99,16 +92,4 @@ localrules:
 
 rule all:
     input:
-        #ref_genome,
-        # expand(
-        #     output_dir.joinpath('snp_analysis', '{sample}', 'snps.tab'), 
-        #     sample=SAMPLES
-        # ),
-        # get_vcf_clusters,
         get_output_per_cluster,
-        # output_dir.joinpath('snp_analysis', 'core_snps.vcf'),
-        # output_dir.joinpath('tree', '{cluster}', 'distance_matrix.csv'),
-        # output_dir.joinpath('tree', '{cluster}', 'newick_tree.txt'),
-        # output_dir.joinpath('tree', '{cluster}', 'snp_matrix.csv'),
-        # output_dir.joinpath('preclustering', 'clusters.yaml')
-
