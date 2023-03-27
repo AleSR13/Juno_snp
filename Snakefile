@@ -53,7 +53,9 @@ def get_output_per_cluster(cluster):
     output_files = expand(output_dir.joinpath('tree/cluster_{cluster}/{file}'),
                     cluster=CLUSTERS,
                     file=['newick_tree.txt', 'snp_matrix.csv'])
-    return output_files
+    output_iqtree = expand(output_dir.joinpath('ml_tree', 'cluster_{cluster}'),
+                    cluster=CLUSTERS)
+    return output_files, output_iqtree
 
 
 #@################################################################################

@@ -18,6 +18,37 @@ rule make_tree:
 vk phylo tree {params.algorithm} {params.input} > {output.tree} 2> {log}
         """
 
+rule make_ml_tree:
+    input:
+        output_dir.joinpath('snp_analysis', 'snippy-core', 'cluster_{cluster}')
+    output:
+        directory(output_dir.joinpath('ml_tree', 'cluster_{cluster}'))
+    conda:
+        "../../envs/iqtree.yaml"
+    message: "Making ML tree..."
+    log:
+        log_dir.joinpath('making_ML_tree_cluster_{cluster}.log')
+    threads: config['threads']['iqtree']
+    resources: mem_gb=config['mem_gb']['iqtree']
+    params:
+        prefix = f"cluster_{cluster}"
+    shell:
+        """
+iqtree \
+-s {input}/core_snps.aln \
+-fconst $(snp-sites -C {input}/core_snps.full.aln) \
+-nt {threads} \
+--prefix {output}/{params.prefix} \
+--seed 1 \
+--mem {resources}G 2>&1>{log}
+
+if [ ! -f {output}/{params.prefix}.treefile ]
+then
+    echo "Treefile is missing, exiting with error now" >>{log}
+    exit 1
+fi
+        """
+
 rule get_dm:
     input: output_dir.joinpath('tree', 'cluster_{cluster}', 'newick_tree.txt')
     output: output_dir.joinpath('tree', 'cluster_{cluster}', 'distance_matrix.csv')
