@@ -15,7 +15,8 @@ rule snp_analysis:
         r2 = lambda wildcards: SAMPLES[wildcards.sample]["R2"],
         ref = output_dir.joinpath("ref_genomes_used/cluster_{cluster}/ref_genome.fasta")
     output: 
-        res = directory(output_dir.joinpath('snp_analysis', 'cluster_{cluster}', '{sample}'))
+        res = directory(output_dir.joinpath('snp_analysis', 'cluster_{cluster}', '{sample}')),
+        stats = output_dir.joinpath('snp_analysis', 'cluster_{cluster}', 'mapping_stats', '{sample}')
     message: "Running snippy on sample {wildcards.sample}."
     log:
         log_dir.joinpath('snp_analysis', 'cluster_{cluster}', 'snippy_{sample}.log')
@@ -40,7 +41,9 @@ snippy --cpus {threads} \
     --R1 {input.r1} \
     --R2 {input.r2} \
     --report \
-    --force &> {log}
+    --force 2>&1>{log}
+
+samtools stats {output.res}/snps.bam 1>{output.stats} 2>>{log}
         """
 
 
@@ -71,5 +74,5 @@ rule snp_core:
     shell:
         """
 mkdir -p {output}
-snippy-core --ref {input.ref} --prefix {output}/core_snps {input.samples} &> {log}
+snippy-core --ref {input.ref} --prefix {output}/core_snps {input.samples} 2>&1> {log}
         """
