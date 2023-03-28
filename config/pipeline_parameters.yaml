@@ -5,9 +5,11 @@ threads:
   mash: 4
   snippy: 8
   vcfkit: 1
+  iqtree: 16
 mem_gb:
   other: 8
   referenceseeker: 16
   mash: 12
   snippy: 20
   vcfkit: 20
+  iqtree: 50

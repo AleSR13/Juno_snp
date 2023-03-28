@@ -31,21 +31,29 @@ rule make_ml_tree:
     threads: config['threads']['iqtree']
     resources: mem_gb=config['mem_gb']['iqtree']
     params:
-        prefix = f"cluster_{cluster}"
+        prefix = "cluster_{cluster}"
     shell:
         """
-iqtree \
--s {input}/core_snps.aln \
--fconst $(snp-sites -C {input}/core_snps.full.aln) \
--nt {threads} \
---prefix {output}/{params.prefix} \
---seed 1 \
---mem {resources}G 2>&1>{log}
+mkdir -p {output}
 
-if [ ! -f {output}/{params.prefix}.treefile ]
+NR_SAMPLES=$(grep -c '>' {input}/core_snps.aln)
+if [ $NR_SAMPLES -le 2 ]
 then
-    echo "Treefile is missing, exiting with error now" >>{log}
-    exit 1
+	echo "Not running IQ-tree, does not reach minimal of three samples" > {output}/iqtree_not_started_for_cluster.txt
+else
+	iqtree \
+	-s {input}/core_snps.aln \
+	-fconst $(snp-sites -C {input}/core_snps.full.aln) \
+	-nt {threads} \
+	--prefix {output}/{params.prefix} \
+	--seed 1 \
+	--mem {resources.mem_gb}G 2>&1>{log}
+
+	if [ ! -f {output}/{params.prefix}.treefile ]
+	then
+    	echo "Treefile is missing, exiting with error now" >>{log}
+    	exit 1
+	fi
 fi
         """
 
