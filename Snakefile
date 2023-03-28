@@ -34,24 +34,40 @@ log_dir = output_dir.joinpath('log')
 db_dir = pathlib.Path(config["db_dir"])
 mash_db = db_dir.joinpath('bacteria-refseq', 'db.msh')
 referenceseeker_md5 = str(db_dir.joinpath('bacteria-refseq', 'downloaded_db.txt'))
-scores_refseq_candidates = output_dir.joinpath('ref_genome_used', 'scores_refseq_candidates.csv')
 
 if config['dryrun'] is True and GIVEN_REF is not None:
     ref_genome = GIVEN_REF
 else:
-    ref_genome = output_dir.joinpath('ref_genome_used', 'ref_genome.fasta')
+    ref_genome = output_dir.joinpath('ref_genomes_used', 'cluster_1', 'ref_genome.fasta')
 
 if GIVEN_REF is not None and not ref_genome.exists():
-    output_dir.mkdir(exist_ok=True)
+    output_dir.mkdir(exist_ok=True, parents=True)
     ref_dir = ref_genome.parent
-    ref_dir.mkdir(exist_ok=True)
+    ref_dir.mkdir(exist_ok=True, parents=True)
     copyfile(GIVEN_REF, ref_genome)
+
+def get_output_per_cluster(cluster):
+    with open(checkpoints.preclustering.get(**cluster).output[0]) as file:
+        SAMPLE_CLUSTERS = yaml.safe_load(file)
+    CLUSTERS = set([ cluster for sample, cluster in SAMPLE_CLUSTERS.items() ])
+    output_files = expand(output_dir.joinpath('tree/cluster_{cluster}/{file}'),
+                    cluster=CLUSTERS,
+                    file=['newick_tree.txt', 'snp_matrix.csv'])
+    output_iqtree = expand(output_dir.joinpath('ml_tree', 'cluster_{cluster}'),
+                    cluster=CLUSTERS)
+    return output_files + output_iqtree
+
 
 #@################################################################################
 #@####                              Processes                                #####
 #@################################################################################
 
-include: "bin/rules/find_reference.smk"
+if GIVEN_REF is not None:
+    include: "bin/rules/mock_cluster.smk"
+else:
+    include: "bin/rules/pre_cluster.smk"
+    include: "bin/rules/find_reference.smk"
+
 include: "bin/rules/snp_analysis.smk"
 include: "bin/rules/dm_n_viz.smk"
 
@@ -78,14 +94,4 @@ localrules:
 
 rule all:
     input:
-        ref_genome,
-        expand(
-            output_dir.joinpath('snp_analysis', '{sample}', 'snps.tab'), 
-            sample=SAMPLES
-        ),
-        output_dir.joinpath('snp_analysis', 'core_snps.vcf'),
-        output_dir.joinpath('tree', 'distance_matrix.csv'),
-        output_dir.joinpath('tree', 'newick_tree.txt')
-        
-
-
+        get_output_per_cluster,

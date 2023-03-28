@@ -30,6 +30,9 @@ class JunoSnpRun(
                 ani=0.95,
                 conserved_dna=0.69,
                 sliding_window=400,
+                kmer_length=21,
+                sketch_size=1000,
+                mash_threshold=0.01,
                 tree_algorithm='upgma',
                 cores=300,
                 time_limit=60,
@@ -53,6 +56,9 @@ class JunoSnpRun(
         self.ani_threshold=float(ani)
         self.conserved_dna_threshold=float(conserved_dna)
         self.sliding_window=int(sliding_window)
+        self.kmer_length=int(kmer_length)
+        self.sketch_size=int(sketch_size)
+        self.mash_threshold=float(mash_threshold)
         if tree_algorithm not in ['upgma', 'nj']:
             raise ValueError(
                 f'The provided tree algorithm {tree_algorithm} is not supported.' \
@@ -115,6 +121,11 @@ class JunoSnpRun(
                 'conserved_dna_threshold': self.conserved_dna_threshold,
                 'sliding_window': self.sliding_window
             },
+            'mash': {
+                'kmer_length': self.kmer_length,
+                'sketch_size': self.sketch_size,
+                'threshold': self.mash_threshold
+            },
             'tree': {
                 'algorithm' : self.tree_algorithm
             },
@@ -162,6 +173,16 @@ def check_between_zero_and_one(num):
         raise ValueError(
             f'The provided input value {str(num)} is not valid. '\
             'Please provide a value between 0-1'
+        )
+
+def check_kmer_length(num):
+    num_int = int(num)
+    if num_int >= 1 and num_int <= 32:
+        return num_int
+    else:
+        raise ValueError(
+            f'The provided input value for kmer length {str(num)} is not valid.' \
+            ' Please provide a number between 1-32'
         )
 
 if __name__ == '__main__':
@@ -225,6 +246,31 @@ if __name__ == '__main__':
         metavar = "INT",
         default = 400,
         help="Sliding window - the lower the more accurate but also slower. Passed to referenceseeker"
+    )
+    parser.add_argument(
+        "-kl",
+        "--kmer-length",
+        type = check_kmer_length,
+        metavar = "INT",
+        default = 21,
+        help="K-mer length - longer kmers increase specificity, shorter kmers increase sensitivity. Passed to mash sketch"
+    )
+    parser.add_argument(
+        "-ss",
+        "--sketch-size",
+        type = int,
+        metavar = "INT",
+        default = 1000,
+        help="Sketch size - larger sketch size better represents the original sequence," \
+            " but leads to large files and longer running time. Passed to mash sketch"
+    )
+    parser.add_argument(
+        "-mt",
+        "--mash-threshold",
+        type = check_between_zero_and_one,
+        metavar = "FLOAT",
+        default = 0.01,
+        help="Mash threshold - maximum mash distance to consider genomes similar. Passed to preclustering script."
     )
     parser.add_argument(
         "-t",
@@ -313,6 +359,9 @@ if __name__ == '__main__':
         ani=args.ani,
         conserved_dna=args.conserved_dna,
         sliding_window=args.sliding_window,
+        kmer_length=args.kmer_length,
+        sketch_size=args.sketch_size,
+        mash_threshold=args.mash_threshold,
         tree_algorithm=args.tree_algorithm,
         cores=args.cores,
         local=args.local,

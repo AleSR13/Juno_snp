@@ -1,10 +1,10 @@
-import imp
 import pandas as pd
 import pathlib
 import argparse
 import sys
 import zipfile
 import subprocess
+import yaml
 
 from ncbi.datasets.openapi import ApiClient as DatasetsApiClient
 from ncbi.datasets.openapi import ApiException as DatasetsApiException
@@ -13,9 +13,10 @@ from ncbi.datasets import GenomeApi as DatasetsGenomeApi
 from ncbi.datasets.package import dataset
 
 
-def join_full_dfs(left, right):
-    merged = pd.merge(left, right, on='#ID', how='outer')
-    return merged
+def read_clusters(yaml_path : pathlib.Path) -> tuple([dict, set]):
+    with open(yaml_path) as file:
+        cluster_dict = yaml.safe_load(file)
+    return cluster_dict
 
 
 def find_referenceseeker_res(input_dir):
@@ -39,6 +40,16 @@ def append_all_referenceseeker_res(file_list):
         res_referenceseeker.append(sample_res)
         res = pd.concat(res_referenceseeker)
     return res
+
+
+def select_files_cluster(file_list : list, cluster : int, cluster_dict : dict) -> list:
+    selected_files = []
+    for sample, _cluster in cluster_dict.items():
+        if str(_cluster) == str(cluster):
+            list_sample_match = [ sample_path for sample_path in file_list if f'referenceseeker_{sample}.tab' in str(sample_path) ]
+            assert len(list_sample_match) == 1, f'Did not find exactly one Referenceseeker file matching sample {sample}. Exiting'
+            selected_files.append(list_sample_match[0])
+    return selected_files
 
 
 def score_candidates(file_list):
@@ -99,6 +110,18 @@ def get_user_args():
         type=pathlib.Path
     )
     parser.add_argument(
+        '-cf', '--clustering-file',
+        metavar='FILE',
+        type=pathlib.Path,
+        required=True
+    )
+    parser.add_argument(
+        '-c', '--cluster',
+        metavar='STR',
+        type=str,
+        required=True
+    )
+    parser.add_argument(
         '-id', '--input-dir',
         metavar='DIR',
         required=not ('-if' in sys.argv or '--input-files' in sys.argv),
@@ -121,7 +144,10 @@ def get_user_args():
 
 def main():
     args = get_user_args()
-    res = score_candidates(args.input_files)
+    cluster_dict = read_clusters(args.clustering_file)
+    list_selected_files = select_files_cluster(args.input_files, args.cluster, cluster_dict)
+    res = score_candidates(list_selected_files)
+    args.output.mkdir(parents=True, exist_ok=True)
     res.to_csv(args.output.joinpath('scores_refseq_candidates.csv'))
     best_hit = get_best_hit(res)
     download_from_ncbi(best_hit, output_dir=args.output)
