@@ -2,6 +2,6 @@ name: referenceseeker
 channels:
   - bioconda
   - conda-forge
-  - defaults
+  - nodefaults
 dependencies:
   - referenceseeker=1.8.0

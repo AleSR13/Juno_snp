@@ -1,7 +1,7 @@
 name: preclustering
 channels:
 - conda-forge
-- defaults
+- nodefaults
 dependencies:
 - networkx
 - pandas

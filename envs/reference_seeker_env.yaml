@@ -2,7 +2,7 @@ name: reference_seeker
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  - nodefaults
 dependencies:
   #- ncbi-genome-download==0.3.1
   #- _libgcc_mutex=0.1=conda_forge

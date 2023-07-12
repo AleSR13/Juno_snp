@@ -1,6 +1,7 @@
 channels:
 - bioconda
 - conda-forge
+- nodefaults
 dependencies:
 - iqtree==2.2.0.3
 - snp-sites==2.5.1

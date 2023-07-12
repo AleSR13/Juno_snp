@@ -2,6 +2,6 @@ name: mash
 channels:
 - bioconda
 - conda-forge
-- defaults
+- nodefaults
 dependencies:
 - mash==2.1

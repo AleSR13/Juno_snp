@@ -2,6 +2,6 @@ name: snp_dists
 channels:
 - bioconda
 - conda-forge
-- defaults
+- nodefaults
 dependencies:
 - snp-dists==0.7.0

@@ -2,8 +2,7 @@ name: grapetree
 channels:
   - conda-forge
   - bioconda
-  - defaults
-  - anaconda
+  - nodefaults
   - biocore
 dependencies:
   - bwa>=0.7.17

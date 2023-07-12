@@ -2,8 +2,7 @@ name: juno_snp
 channels:
   - bioconda
   - conda-forge
-  - anaconda
-  - defaults
+  - nodefaults
 dependencies:
   - git
   - mamba==0.24.0
