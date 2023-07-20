@@ -1,8 +1,10 @@
 name: snippy
 channels:
-  - conda-forge
+#  - conda-forge
   - bioconda
-  - nodefaults
+#  - defaults
 dependencies:
-  - snippy==4.6.0
-  #- python==3.7.6
+  - snippy=4.6.0
+  - snpeff>=4.3,<=5.0
+  - vcflib>=1.0.0_rc3,<=1.0.2
+  - python=3.*
