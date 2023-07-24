@@ -16,12 +16,15 @@ import argparse
 import pathlib
 import subprocess
 import yaml
+from version import __package_name__, __version__, __description__
 
 class JunoSnpRun(
     base_juno_pipeline.PipelineStartup, base_juno_pipeline.RunSnakemake
 ):
     """Class with the arguments and specifications that are only for the Juno-typing pipeline but inherit from PipelineStartup and RunSnakemake"""
-    
+    pipeline_name: str = __package_name__
+    pipeline_version: str = __version__
+
     def __init__(self, 
                 input_dir, 
                 ref,
@@ -187,7 +190,7 @@ def check_kmer_length(num):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description = "Juno-SNP pipeline. Automated pipeline for SNP analysis.",
+        description = __description__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
@@ -350,6 +353,7 @@ if __name__ == '__main__':
         action=helper_functions.SnakemakeKwargsAction,
         help="Extra arguments to be passed to snakemake API (https://snakemake.readthedocs.io/en/stable/api_reference/snakemake.html)."
     )
+    parser.add_argument('--version', action='version', version=f'{__package_name__} {__version__}')
     args = parser.parse_args()
     JunoSnpRun(
         input_dir=args.input, 
