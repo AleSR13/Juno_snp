@@ -35,10 +35,10 @@ dependencies:
   # - pbzip2=1.1.13=0
   # - perl=5.32.1=2_h7f98852_perl5
   # - pigz=2.6=h27826a3_0
-  - pip==19.2.3
-  - python==3.7.6
+  - pip
+  - python=3.*
   # - python-isal=1.0.1=py310h5764c6d_0
-  - pandas==1.3.2
+  - pandas=1.*
   # - python_abi=3.10=2_cp310
   # - readline=8.1.2=h0f457ee_0
   - referenceseeker==1.8.0
@@ -50,6 +50,5 @@ dependencies:
   # - xopen=1.6.0=py310hff52083_0
   # - xz=5.2.6=h166bdaf_0
   # - zlib=1.2.12=h166bdaf_3
-  - pip:
-    - ncbi-datasets-pylib
+  - ncbi-datasets-pylib
 prefix: /mnt/scratch_dir/wolthuir/conda/envs/reference_seeker

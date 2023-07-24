@@ -10,8 +10,6 @@ from ncbi.datasets.openapi import ApiClient as DatasetsApiClient
 from ncbi.datasets.openapi import ApiException as DatasetsApiException
 from ncbi.datasets import GenomeApi as DatasetsGenomeApi
 
-from ncbi.datasets.package import dataset
-
 
 def read_clusters(yaml_path : pathlib.Path) -> tuple([dict, set]):
     with open(yaml_path) as file:
