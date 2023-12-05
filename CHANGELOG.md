@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.3](https://github.com/RIVM-bioinformatics/juno-snp/compare/v0.0.2...v0.0.3) (2023-12-05)
+
+
+### Bug Fixes
+
+* rm unneeded rules ([5df54ff](https://github.com/RIVM-bioinformatics/juno-snp/commit/5df54ff9307d561f3ecbd267eeca69425ab1531c))
+* set prefix to str ([89ea436](https://github.com/RIVM-bioinformatics/juno-snp/commit/89ea4361b912ea6d419e3944b151a3e74952dabb))
+
+
+### Dependencies
+
+* re-add containers ([3930b55](https://github.com/RIVM-bioinformatics/juno-snp/commit/3930b5539edd4824d956770faae94b75236345c3))
+
+
+### Documentation
+
+* update README ([6dcb6c6](https://github.com/RIVM-bioinformatics/juno-snp/commit/6dcb6c60b7235c041ced7803935e328bc854cf5e))
+
 ## [0.0.2](https://github.com/RIVM-bioinformatics/juno-snp/compare/v0.0.1...v0.0.2) (2023-07-24)
 
 
