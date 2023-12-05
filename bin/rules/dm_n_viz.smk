@@ -1,3 +1,24 @@
+rule count_const_sites:
+    input:
+        output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}"),
+    output:
+        temp(output_dir.joinpath("ml_tree", "counts_cluster_{cluster}.txt")),
+    message:
+        "Counting constant site identities."
+    log:
+        log_dir.joinpath("snp_analysis", "count_const_sites", "cluster_{cluster}.log"),
+    conda:
+        "../../envs/snippy.yaml"
+    container:
+        "docker://staphb/snippy:4.6.0-SC2"
+    threads: config["threads"]["other"]
+    resources:
+        mem_gb=config["mem_gb"]["other"],
+    shell:
+        """
+snp-sites -C {input}/core_snps.full.aln > {output}
+        """
+
 rule make_tree:
     input:
         output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}"),
@@ -30,7 +51,8 @@ vk phylo tree {params.algorithm} {params.input} > {output.tree} 2> {log}
 
 rule make_ml_tree:
     input:
-        output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}"),
+        snippy_dir = output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}"),
+        const_sites = output_dir.joinpath("ml_tree", "counts_cluster_{cluster}.txt")
     output:
         directory(output_dir.joinpath("ml_tree", "cluster_{cluster}")),
     container:
@@ -50,14 +72,14 @@ rule make_ml_tree:
         """
 mkdir -p {output}
 
-NR_SAMPLES=$(grep -c '>' {input}/core_snps.aln)
+NR_SAMPLES=$(grep -c '>' {input.snippy_dir}/core_snps.aln)
 if [ $NR_SAMPLES -le 2 ]
 then
     echo "Not running IQ-tree, does not reach minimal of three samples" > {output}/iqtree_not_started_for_cluster.txt
 else
-    iqtree \
-    -s {input}/core_snps.aln \
-    -fconst $(snp-sites -C {input}/core_snps.full.aln) \
+    iqtree2 \
+    -s {input.snippy_dir}/core_snps.aln \
+    -fconst $(<{input.const_sites}) \
     -nt {threads} \
     --prefix {output}/{params.prefix} \
     --seed 1 \

@@ -54,8 +54,6 @@ snippy --cpus {threads} \
     --R2 {input.r2} \
     --report \
     --force 2>&1>{log}
-
-samtools stats {output.res}/snps.bam 1>{output.stats} 2>>{log}
         """
 
 
