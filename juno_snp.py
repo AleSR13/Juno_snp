@@ -292,7 +292,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "-p",
         "--prefix",
-        type = pathlib.Path,
+        type = str,
         metavar="PATH",
         default=None,
         help = "Conda or singularity prefix. Path to the place where you want to store the conda environments or the singularity images."

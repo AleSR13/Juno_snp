@@ -29,10 +29,12 @@ The Juno-SNP pipeline will then perform the following steps:
 3. It will perform the SNP calling on every sample that was given using [Snippy](https://github.com/tseemann/snippy)
 4. It will calculate the distance matrix and produce a Newick file for the "Neighbor Joining" tree for the given samples using [GrapeTree](https://achtman-lab.github.io/GrapeTree/).
 
+By default, most rules will be run using containers.
+
 ## Prerequisities
 
-* **Linux + conda** A Linux-like environment with at least 'miniconda' installed. 
-* Preferentially also **Singularity**. See instructions for running the pipeline if you don't have singularity installed.
+* **Linux + mamba/conda** A Linux-like environment with at least 'miniconda' installed. 
+* Preferentially, **Singularity**. See instructions for running the pipeline if you don't have singularity installed.
 
 
 ## Installation
