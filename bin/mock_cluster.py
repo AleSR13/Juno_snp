@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import argparse
-import yaml
 import pathlib
+
+import yaml
 
 
 def main(args):
@@ -28,7 +29,7 @@ if __name__ == "__main__":
         "--output",
         type=pathlib.Path,
         metavar="FILE",
-        help = "Output path for mock_clusters.yaml",
+        help="Output path for mock_clusters.yaml",
     )
     args = parser.parse_args()
 
