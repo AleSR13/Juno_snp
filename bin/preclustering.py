@@ -45,8 +45,8 @@ def split_graph(
 def plot_graphs(
     whole_graph: nx.Graph, splitted_graph: nx.Graph, pos: dict, out_dir: Path
 ) -> None:
-    print(whole_graph.edges)
-    print(splitted_graph.edges)
+    # print(whole_graph.edges)
+    # print(splitted_graph.edges)
     os.makedirs(out_dir, exist_ok=True)
     dist_labels = nx.get_edge_attributes(whole_graph, "dist")
     nx.draw(whole_graph, pos)
