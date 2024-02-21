@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/RIVM-bioinformatics/juno-snp/compare/v0.0.3...v1.0.0) (2024-02-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* update juno library to v2
+
+### Code Refactoring
+
+* update juno library to v2 ([347971f](https://github.com/RIVM-bioinformatics/juno-snp/commit/347971f22d28726b274b296b552128f934320a40))
+
 ## [0.0.3](https://github.com/RIVM-bioinformatics/juno-snp/compare/v0.0.2...v0.0.3) (2023-12-05)
 
 
