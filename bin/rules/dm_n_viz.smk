@@ -19,6 +19,7 @@ rule count_const_sites:
 snp-sites -C {input}/core_snps.full.aln > {output}
         """
 
+
 rule make_tree:
     input:
         output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}"),
@@ -51,8 +52,10 @@ vk phylo tree {params.algorithm} {params.input} > {output.tree} 2> {log}
 
 rule make_ml_tree:
     input:
-        snippy_dir = output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}"),
-        const_sites = output_dir.joinpath("ml_tree", "counts_cluster_{cluster}.txt")
+        snippy_dir=output_dir.joinpath(
+            "snp_analysis", "snippy-core", "cluster_{cluster}"
+        ),
+        const_sites=output_dir.joinpath("ml_tree", "counts_cluster_{cluster}.txt"),
     output:
         directory(output_dir.joinpath("ml_tree", "cluster_{cluster}")),
     container:

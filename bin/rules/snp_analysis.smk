@@ -24,9 +24,15 @@ rule snp_analysis:
         res=directory(
             output_dir.joinpath("snp_analysis", "cluster_{cluster}", "{sample}")
         ),
-        bam=output_dir.joinpath("snp_analysis", "cluster_{cluster}", "{sample}", "snps.bam"),
-        vcf=output_dir.joinpath("snp_analysis", "cluster_{cluster}", "{sample}", "snps.vcf"),
-        aligned_fa=output_dir.joinpath("snp_analysis", "cluster_{cluster}", "{sample}", "snps.aligned.fa"),
+        bam=output_dir.joinpath(
+            "snp_analysis", "cluster_{cluster}", "{sample}", "snps.bam"
+        ),
+        vcf=output_dir.joinpath(
+            "snp_analysis", "cluster_{cluster}", "{sample}", "snps.vcf"
+        ),
+        aligned_fa=output_dir.joinpath(
+            "snp_analysis", "cluster_{cluster}", "{sample}", "snps.aligned.fa"
+        ),
     message:
         "Running snippy on sample {wildcards.sample}."
     log:

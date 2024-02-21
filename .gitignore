@@ -6,6 +6,8 @@ __pycache__/
 output/
 .parallel/
 .pytest_cache
+.cache
+.vscode
 
 # Files to ignore
 *.sif
