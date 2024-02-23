@@ -5,6 +5,8 @@ rule count_const_sites:
         temp(output_dir.joinpath("ml_tree", "counts_cluster_{cluster}.txt")),
     message:
         "Counting constant site identities."
+    params:
+        cluster="{cluster}",
     log:
         log_dir.joinpath("snp_analysis", "count_const_sites", "cluster_{cluster}.log"),
     conda:
@@ -16,7 +18,7 @@ rule count_const_sites:
         mem_gb=config["mem_gb"]["other"],
     shell:
         """
-snp-sites -C {input}/core_snps.full.aln > {output}
+snp-sites -C {input}/cluster_{params.cluster}.full.aln > {output}
         """
 
 
@@ -37,16 +39,11 @@ rule make_tree:
     resources:
         mem_gb=config["mem_gb"]["vcfkit"],
     params:
-        input=lambda wildcards: output_dir.joinpath(
-            "snp_analysis",
-            "snippy-core",
-            f"cluster_{wildcards.cluster}",
-            "core_snps.vcf",
-        ),
+        cluster="{cluster}",
         algorithm=config["tree"]["algorithm"],
     shell:
         """
-vk phylo tree {params.algorithm} {params.input} > {output.tree} 2> {log}
+vk phylo tree {params.algorithm} {input}/cluster_{params.cluster}.vcf > {output.tree} 2> {log}
         """
 
 
@@ -70,25 +67,25 @@ rule make_ml_tree:
     resources:
         mem_gb=config["mem_gb"]["iqtree"],
     params:
-        prefix="cluster_{cluster}",
+        cluster="{cluster}",
     shell:
         """
 mkdir -p {output}
 
-NR_SAMPLES=$(grep -c '>' {input.snippy_dir}/core_snps.aln)
+NR_SAMPLES=$(grep -c '>' {input.snippy_dir}/cluster_{params.cluster}.aln)
 if [ $NR_SAMPLES -le 2 ]
 then
     echo "Not running IQ-tree, does not reach minimal of three samples" > {output}/iqtree_not_started_for_cluster.txt
 else
     iqtree2 \
-    -s {input.snippy_dir}/core_snps.aln \
+    -s {input.snippy_dir}/cluster_{params.cluster}.aln \
     -fconst $(<{input.const_sites}) \
     -nt {threads} \
-    --prefix {output}/{params.prefix} \
+    --prefix {output}/cluster_{params.cluster} \
     --seed 1 \
     --mem {resources.mem_gb}G 2>&1>{log}
 
-    if [ ! -f {output}/{params.prefix}.treefile ]
+    if [ ! -f {output}/cluster_{params.cluster}.treefile ]
     then
         echo "Treefile is missing, exiting with error now" >>{log}
         exit 1
@@ -136,13 +133,8 @@ rule get_snp_matrix:
     resources:
         mem_gb=config["mem_gb"]["other"],
     params:
-        input=lambda wildcards: output_dir.joinpath(
-            "snp_analysis",
-            "snippy-core",
-            f"cluster_{wildcards.cluster}",
-            "core_snps.full.aln",
-        ),
+        cluster="{cluster}",
     shell:
         """
-snp-dists -c {params.input} 1>{output.snp_matrix} 2>{log}
+snp-dists -c {input}/cluster_{params.cluster}.full.aln 1>{output.snp_matrix} 2>{log}
         """

@@ -63,7 +63,11 @@ def get_output_per_cluster(cluster):
     output_iqtree = expand(
         output_dir.joinpath("ml_tree", "cluster_{cluster}"), cluster=CLUSTERS
     )
-    return output_files + output_iqtree
+    output_qc = expand(
+        output_dir.joinpath("qc", "cluster_{cluster}", "multiqc", "multiqc.html"),
+        cluster=CLUSTERS,
+    )
+    return output_files + output_iqtree + output_qc
 
 
 #################################################################################
@@ -82,6 +86,7 @@ else:
 
 include: "bin/rules/snp_analysis.smk"
 include: "bin/rules/dm_n_viz.smk"
+include: "bin/rules/qc.smk"
 
 
 #################################################################################
