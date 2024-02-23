@@ -79,6 +79,7 @@ rule snp_analysis:
         basequal=13,
         maxsoft="x",
         sample="{sample}",
+        report=config["snippy"]["report"],
     shell:
         """
 snippy --cpus {threads} \
@@ -86,7 +87,7 @@ snippy --cpus {threads} \
     --ref {input.ref} \
     --R1 {input.r1} \
     --R2 {input.r2} \
-    --report \
+    {params.report} \
     --prefix {params.sample} \
     --force 2>&1>{log}
         """

@@ -147,6 +147,11 @@ class JunoSnp(Pipeline):
             choices=["upgma", "nj"],
             help="Algorithm to use for making the tree. It can be 'upgma' or 'nj' (neighbor-joining). Default is upgma",
         )
+        self.add_argument(
+            "--snippy-report",
+            action="store_true",
+            help="If set, the pipeline will run Snippy with --report option. This requires quite some extra time and storage, especially if there a lot of variants",
+        )
 
     def _parse_args(self) -> argparse.Namespace:
         args = super()._parse_args()
@@ -160,6 +165,7 @@ class JunoSnp(Pipeline):
         self.sketch_size: int = args.sketch_size
         self.mash_threshold: float = args.mash_threshold
         self.tree_algorithm: str = args.tree_algorithm
+        self.snippy_report: bool = args.snippy_report
         self.dryrun: bool = args.dryrun
 
         return args
@@ -179,6 +185,11 @@ class JunoSnp(Pipeline):
         ) as f:
             parameters_dict = yaml.safe_load(f)
         self.snakemake_config.update(parameters_dict)
+
+        if self.snippy_report:
+            snippy_report_cmd = "--report"
+        else:
+            snippy_report_cmd = ""
 
         self.user_parameters = {
             "input_dir": str(self.input_dir),
@@ -200,6 +211,7 @@ class JunoSnp(Pipeline):
                 "threshold": self.mash_threshold,
             },
             "tree": {"algorithm": self.tree_algorithm},
+            "snippy": {"report": snippy_report_cmd},
         }
 
 
