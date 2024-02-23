@@ -19,7 +19,9 @@ rule snp_analysis:
     input:
         r1=lambda wildcards: SAMPLES[wildcards.sample]["R1"],
         r2=lambda wildcards: SAMPLES[wildcards.sample]["R2"],
-        ref=output_dir.joinpath("ref_genomes_used/cluster_{cluster}/ref_genome.fasta"),
+        ref=output_dir.joinpath(
+            "ref_genomes_used", "cluster_{cluster}", "ref_genome.fasta"
+        ),
     output:
         multiext(
             str(
@@ -33,21 +35,6 @@ rule snp_analysis:
             ".aligned.fa",
             ".txt",
         ),
-        # bam=output_dir.joinpath(
-        #     "snp_analysis", "cluster_{cluster}", "{sample}", "{sample}.bam"
-        # ),
-        # vcf=output_dir.joinpath(
-        #     "snp_analysis", "cluster_{cluster}", "{sample}", "{sample}.vcf"
-        # ),
-        # filt_vcf=output_dir.joinpath(
-        #     "snp_analysis", "cluster_{cluster}", "{sample}", "{sample}.filt.vcf"
-        # ),
-        # aligned_fa=output_dir.joinpath(
-        #     "snp_analysis", "cluster_{cluster}", "{sample}", "{sample}.aligned.fa"
-        # ),
-        # txt=output_dir.joinpath(
-        #     "snp_analysis", "cluster_{cluster}", "{sample}", "{sample}.txt"
-        # ),
         res=directory(
             output_dir.joinpath("snp_analysis", "cluster_{cluster}", "{sample}")
         ),
