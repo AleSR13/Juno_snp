@@ -26,6 +26,11 @@ with open(sample_sheet) as sample_sheet_file:
 
 GIVEN_REF = config["reference"]
 
+# Convert threads and mem_gb to int
+for param in ["threads", "mem_gb"]:
+    for k in config[param]:
+        config[param][k] = int(config[param][k])
+
 #################################################################################
 #####                         Expected output                               #####
 #################################################################################
