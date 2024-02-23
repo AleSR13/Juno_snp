@@ -38,9 +38,7 @@ referenceseeker_md5 = str(db_dir.joinpath("bacteria-refseq", "downloaded_db.txt"
 if (config["dryrun"] is True) and (GIVEN_REF != "None"):
     ref_genome = GIVEN_REF
 else:
-    ref_genome = output_dir.joinpath(
-        "ref_genomes_used", "cluster_1", "ref_genome.fasta"
-    )
+    ref_genome = output_dir.joinpath("ref_genomes_used", "cluster_1", "ref_genome.seq")
 
 # GIVEN_REF is converted to str
 if (GIVEN_REF != "None") and (not ref_genome.exists()):
@@ -63,7 +61,11 @@ def get_output_per_cluster(cluster):
     output_iqtree = expand(
         output_dir.joinpath("ml_tree", "cluster_{cluster}"), cluster=CLUSTERS
     )
-    return output_files + output_iqtree
+    output_qc = expand(
+        output_dir.joinpath("qc", "cluster_{cluster}", "multiqc", "multiqc.html"),
+        cluster=CLUSTERS,
+    )
+    return output_files + output_iqtree + output_qc
 
 
 #################################################################################
@@ -82,6 +84,7 @@ else:
 
 include: "bin/rules/snp_analysis.smk"
 include: "bin/rules/dm_n_viz.smk"
+include: "bin/rules/qc.smk"
 
 
 #################################################################################

@@ -66,7 +66,7 @@ rule get_best_ref:
         clustering=output_dir.joinpath("preclustering", "clusters.yaml"),
     output:
         ref=output_dir.joinpath(
-            "ref_genomes_used", "cluster_{cluster}", "ref_genome.fasta"
+            "ref_genomes_used", "cluster_{cluster}", "ref_genome.seq"
         ),
     container:
         "docker://ghcr.io/boasvdp/referenceseeker:1.8.0"

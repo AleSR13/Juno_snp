@@ -6,6 +6,9 @@ threads:
   snippy: 8
   vcfkit: 1
   iqtree: 16
+  picard: 1
+  filter_variants: 1
+  multiqc: 1
 mem_gb:
   other: 8
   referenceseeker: 16
@@ -13,3 +16,6 @@ mem_gb:
   snippy: 20
   vcfkit: 20
   iqtree: 50
+  picard: 64
+  filter_variants: 8
+  multiqc: 16
