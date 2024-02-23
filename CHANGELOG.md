@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.1.0...v1.1.1) (2024-02-23)
+
+
+### Bug Fixes
+
+* add hpc resources ([b15eaed](https://github.com/RIVM-bioinformatics/juno-snp/commit/b15eaed3302a660e300d55cd1dc86f8fc20a297e))
+* convert hpc config values to int ([55e5656](https://github.com/RIVM-bioinformatics/juno-snp/commit/55e56569029942fdbecfc718a7881f7c40cedff3))
+* improve error message for outlier genomes ([2c038b4](https://github.com/RIVM-bioinformatics/juno-snp/commit/2c038b4bd1eec86b13266a0e2b001c570c5adcfc))
+
 ## [1.1.0](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.0.0...v1.1.0) (2024-02-23)
 
 
