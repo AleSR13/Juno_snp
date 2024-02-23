@@ -124,6 +124,9 @@ rule picard_CollectAlignmentSummaryMetrics:
         ),
     params:
         use_singularity=config["use_singularity"],
+    threads: config["threads"]["picard"]
+    resources:
+        mem_gb=config["mem_gb"]["picard"],
     shell:
         """
 if [ {params.use_singularity} == True ]
@@ -159,6 +162,9 @@ rule picard_CollectWgsMetrics:
         log_dir.joinpath("CollectWgsMetrics", "cluster_{cluster}", "{sample}.log"),
     params:
         use_singularity=config["use_singularity"],
+    threads: config["threads"]["picard"]
+    resources:
+        mem_gb=config["mem_gb"]["picard"],
     shell:
         """
 if [ {params.use_singularity} == True ]
