@@ -10,19 +10,23 @@ Documentation: https://rivm-bioinformatics.github.io/ids_bacteriology_man/juno-s
 
 """
 
+import argparse
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Callable, Union
+
+import yaml
+
 # Dependencies
 from juno_library import Pipeline
-import argparse
-from pathlib import Path
-from typing import Union, Callable
-import yaml
-from dataclasses import dataclass, field
 
-from version import __package_name__, __version__, __description__
+from version import __description__, __package_name__, __version__
+
 
 def main() -> None:
     juno_snp = JunoSnp()
     juno_snp.run()
+
 
 def check_number_within_range(
     minimum: float = 0, maximum: float = 1
@@ -61,7 +65,7 @@ def check_number_within_range(
 class JunoSnp(Pipeline):
     pipeline_name: str = __package_name__
     pipeline_version: str = __version__
-    input_type: str = 'both'
+    input_type: str = "both"
 
     def _add_args_to_parser(self) -> None:
         super()._add_args_to_parser()
@@ -71,80 +75,78 @@ class JunoSnp(Pipeline):
         self.add_argument(
             "-r",
             "--reference",
-            type = Path,
-            required = False,
-            metavar = "FILE",
-            help = "Relative or absolute path to a reference fasta file."
+            type=Path,
+            required=False,
+            metavar="FILE",
+            help="Relative or absolute path to a reference genome. Can be FASTA or GenBank",
         )
         self.add_argument(
             "-d",
             "--db-dir",
-            type = Path,
-            metavar = "DIR",
-            default = "/mnt/db/juno/snp",
-            help = "Relative or absolute path to the database directory. If non is given, /mnt/db/juno/snp"\
-                " (where the default db resides at the RIVM will be used)."
+            type=Path,
+            metavar="DIR",
+            default="/mnt/db/juno/snp",
+            help="Relative or absolute path to the database directory. If non is given, /mnt/db/juno/snp"
+            " (where the default db resides at the RIVM will be used).",
         )
         self.add_argument(
             "-a",
             "--ani",
-            type = check_number_within_range(0, 1),
-            metavar = "INT",
-            default = 0.95,
-            help="ANI threshold. Passed to referenceseeker"
+            type=check_number_within_range(0, 1),
+            metavar="INT",
+            default=0.95,
+            help="ANI threshold. Passed to referenceseeker",
         )
         self.add_argument(
             "-cd",
             "--conserved-dna",
-            type = check_number_within_range(0, 1),
-            metavar = "INT",
-            default = 0.69,
-            help="Conserved DNA threshold. Passed to referenceseeker"
+            type=check_number_within_range(0, 1),
+            metavar="INT",
+            default=0.69,
+            help="Conserved DNA threshold. Passed to referenceseeker",
         )
         self.add_argument(
             "-sw",
             "--sliding-window",
-            type = check_number_within_range(100, 1000),
-            metavar = "INT",
-            default = 400,
-            help="Sliding window - the lower the more accurate but also slower. Passed to referenceseeker"
+            type=check_number_within_range(100, 1000),
+            metavar="INT",
+            default=400,
+            help="Sliding window - the lower the more accurate but also slower. Passed to referenceseeker",
         )
         self.add_argument(
             "-kl",
             "--kmer-length",
-            type = check_number_within_range(1, 32),
-            metavar = "INT",
-            default = 21,
-            help="K-mer length - longer kmers increase specificity, shorter kmers increase sensitivity. Passed to mash sketch"
+            type=check_number_within_range(1, 32),
+            metavar="INT",
+            default=21,
+            help="K-mer length - longer kmers increase specificity, shorter kmers increase sensitivity. Passed to mash sketch",
         )
         self.add_argument(
             "-ss",
             "--sketch-size",
-            type = int,
-            metavar = "INT",
-            default = 1000,
-            help="Sketch size - larger sketch size better represents the original sequence," \
-                " but leads to large files and longer running time. Passed to mash sketch"
+            type=int,
+            metavar="INT",
+            default=1000,
+            help="Sketch size - larger sketch size better represents the original sequence,"
+            " but leads to large files and longer running time. Passed to mash sketch",
         )
         self.add_argument(
             "-mt",
             "--mash-threshold",
-            type = check_number_within_range(0, 1),
-            metavar = "FLOAT",
-            default = 0.01,
-            help="Mash threshold - maximum mash distance to consider genomes similar. Passed to preclustering script."
+            type=check_number_within_range(0, 1),
+            metavar="FLOAT",
+            default=0.01,
+            help="Mash threshold - maximum mash distance to consider genomes similar. Passed to preclustering script.",
         )
         self.add_argument(
             "-t",
             "--tree-algorithm",
-            type = str,
-            metavar = "ALGORITHM",
-            default = 'upgma',
-            choices=['upgma', 'nj'],
-            help="Algorithm to use for making the tree. It can be 'upgma' or 'nj' (neighbor-joining). Default is upgma"
+            type=str,
+            metavar="ALGORITHM",
+            default="upgma",
+            choices=["upgma", "nj"],
+            help="Algorithm to use for making the tree. It can be 'upgma' or 'nj' (neighbor-joining). Default is upgma",
         )
-
-
 
     def _parse_args(self) -> argparse.Namespace:
         args = super()._parse_args()
@@ -161,7 +163,7 @@ class JunoSnp(Pipeline):
         self.dryrun: bool = args.dryrun
 
         return args
-    
+
     def setup(self) -> None:
         super().setup()
         if self.snakemake_args["use_singularity"]:
@@ -185,27 +187,24 @@ class JunoSnp(Pipeline):
             "db_dir": str(self.db_dir),
             "reference": str(self.reference),
             "use_singularity": str(self.snakemake_args["use_singularity"]),
-            'dryrun': self.dryrun,
-            'referenceseeker': {
-                'db': str(self.db_dir.joinpath('bacteria-refseq')),
-                'ani_threshold': self.ani,
-                'conserved_dna_threshold': self.conserved_dna,
-                'sliding_window': self.sliding_window
+            "dryrun": self.dryrun,
+            "referenceseeker": {
+                "db": str(self.db_dir.joinpath("bacteria-refseq")),
+                "ani_threshold": self.ani,
+                "conserved_dna_threshold": self.conserved_dna,
+                "sliding_window": self.sliding_window,
             },
-            'mash': {
-                'kmer_length': self.kmer_length,
-                'sketch_size': self.sketch_size,
-                'threshold': self.mash_threshold
+            "mash": {
+                "kmer_length": self.kmer_length,
+                "sketch_size": self.sketch_size,
+                "threshold": self.mash_threshold,
             },
-            'tree': {
-                'algorithm' : self.tree_algorithm
-            },
+            "tree": {"algorithm": self.tree_algorithm},
         }
 
 
 if __name__ == "__main__":
     main()
-
 
 
 # class JunoSnpRun(
@@ -215,10 +214,10 @@ if __name__ == "__main__":
 #     pipeline_name: str = __package_name__
 #     pipeline_version: str = __version__
 
-#     def __init__(self, 
-#                 input_dir, 
+#     def __init__(self,
+#                 input_dir,
 #                 ref,
-#                 output_dir, 
+#                 output_dir,
 #                 db_dir='/mnt/db/juno/snp',
 #                 ani=0.95,
 #                 conserved_dna=0.69,
@@ -238,7 +237,7 @@ if __name__ == "__main__":
 #                 prefix=None,
 #                 **kwargs):
 #         """Initiating Juno-SNP pipeline"""
-        
+
 #         # Get proper file paths
 #         output_dir = pathlib.Path(output_dir).resolve()
 #         if ref is not None:
@@ -262,7 +261,7 @@ if __name__ == "__main__":
 #         self.path_to_audit = output_dir.joinpath('audit_trail')
 #         base_juno_pipeline.PipelineStartup.__init__(
 #             self,
-#             input_dir=pathlib.Path(input_dir).resolve(), 
+#             input_dir=pathlib.Path(input_dir).resolve(),
 #             input_type='both',
 #             min_num_lines=2
 #         ) # Min for viable fasta
@@ -300,7 +299,7 @@ if __name__ == "__main__":
 #         self.start_juno_pipeline()
 #         with open(self.sample_sheet, 'w') as file_:
 #             yaml.dump(self.sample_dict, file_, default_flow_style=False)
-    
+
 #     def write_userparameters(self):
 
 #         config_params = {
@@ -324,12 +323,12 @@ if __name__ == "__main__":
 #             },
 #             'dryrun': self.dryrun
 #         }
-        
+
 #         with open(self.user_parameters, 'w') as file_:
 #             yaml.dump(config_params, file_, default_flow_style=False)
 
-#         return config_params     
-        
+#         return config_params
+
 #     def run_juno_snp_pipeline(self):
 #         self.start_juno_snp_pipeline()
 #         self.user_params = self.write_userparameters()
@@ -383,11 +382,11 @@ if __name__ == "__main__":
 #         description = __description__,
 #         formatter_class=argparse.ArgumentDefaultsHelpFormatter
 #     )
-    
+
 #     parser.add_argument('--version', action='version', version=f'{__package_name__} {__version__}')
 #     args = parser.parse_args()
 #     JunoSnpRun(
-#         input_dir=args.input, 
+#         input_dir=args.input,
 #         ref=args.reference,
 #         output_dir=args.output,
 #         db_dir=args.db_dir,
