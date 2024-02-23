@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.0.0...v1.1.0) (2024-02-23)
+
+
+### Features
+
+* add QC per cluster ([65960ef](https://github.com/RIVM-bioinformatics/juno-snp/commit/65960efa3a8d5dd8eb43c5618f61eb636f9758f3))
+* allow toggling snippy --report flag ([0949a61](https://github.com/RIVM-bioinformatics/juno-snp/commit/0949a61b522b29a89d33f4be9805ccbc31ccfcae))
+
+
+### Bug Fixes
+
+* allow gbk and fasta refs ([7dbea61](https://github.com/RIVM-bioinformatics/juno-snp/commit/7dbea6137ddbeabc1d33417592c259b47ab72510))
+
 ## [1.0.0](https://github.com/RIVM-bioinformatics/juno-snp/compare/v0.0.3...v1.0.0) (2024-02-21)
 
 
