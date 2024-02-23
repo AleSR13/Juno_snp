@@ -70,6 +70,12 @@ def score_candidates(file_list):
 
 
 def get_best_hit(candidates_df):
+    if candidates_df.shape[0] == 0:
+        raise ValueError(
+            f"Could not find any genomes in NCBI matching any genome in this cluster.\n"
+            + "Please check whether the genomes are of good enough quality.\n"
+            + "It's also possible to force a reference genome by specifying --reference"
+        )
     best_refseq_hit = candidates_df.index[0]
     print(f"The best scored reference genome for this dataset is: {best_refseq_hit}")
     return best_refseq_hit
