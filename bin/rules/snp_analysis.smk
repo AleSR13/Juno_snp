@@ -15,12 +15,34 @@ def get_mapped_per_cluster(cluster):
     )
 
 
+rule make_fasta_ref:
+    input:
+        output_dir.joinpath("ref_genomes_used", "cluster_{cluster}", "ref_genome.seq"),
+    output:
+        output_dir.joinpath("ref_genomes_used", "cluster_{cluster}", "ref_genome.fasta"),
+    message:
+        "Converting reference genome to fasta format."
+    log:
+        log_dir.joinpath("make_fasta_ref", "cluster_{cluster}.log"),
+    container:
+        "docker://staphb/snippy:4.6.0-SC2"
+    conda:
+        "../../envs/snippy.yaml"
+    threads: config["threads"]["other"]
+    resources:
+        mem_gb=config["mem_gb"]["other"],
+    shell:
+        """
+any2fasta {input} > {output} 2>{log}
+        """
+
+
 rule snp_analysis:
     input:
         r1=lambda wildcards: SAMPLES[wildcards.sample]["R1"],
         r2=lambda wildcards: SAMPLES[wildcards.sample]["R2"],
         ref=output_dir.joinpath(
-            "ref_genomes_used", "cluster_{cluster}", "ref_genome.fasta"
+            "ref_genomes_used", "cluster_{cluster}", "ref_genome.seq"
         ),
     output:
         multiext(
@@ -74,7 +96,7 @@ rule snp_core:
     input:
         samples=get_mapped_per_cluster,
         ref=output_dir.joinpath(
-            "ref_genomes_used", "cluster_{cluster}", "ref_genome.fasta"
+            "ref_genomes_used", "cluster_{cluster}", "ref_genome.seq"
         ),
     output:
         res=directory(

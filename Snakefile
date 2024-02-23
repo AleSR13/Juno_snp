@@ -38,9 +38,7 @@ referenceseeker_md5 = str(db_dir.joinpath("bacteria-refseq", "downloaded_db.txt"
 if (config["dryrun"] is True) and (GIVEN_REF != "None"):
     ref_genome = GIVEN_REF
 else:
-    ref_genome = output_dir.joinpath(
-        "ref_genomes_used", "cluster_1", "ref_genome.fasta"
-    )
+    ref_genome = output_dir.joinpath("ref_genomes_used", "cluster_1", "ref_genome.seq")
 
 # GIVEN_REF is converted to str
 if (GIVEN_REF != "None") and (not ref_genome.exists()):

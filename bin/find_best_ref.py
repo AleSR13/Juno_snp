@@ -79,7 +79,7 @@ def download_from_ncbi(accession_nr, output_dir):
     output_dir = pathlib.Path(output_dir)
     accessions = [accession_nr]
     zipfile_name = output_dir.joinpath("ncbi_dataset.zip")
-    ref_genome = output_dir.joinpath("ref_genome.fasta")
+    ref_genome = output_dir.joinpath("ref_genome.seq")
     with DatasetsApiClient() as api_client:
         genome_api = DatasetsGenomeApi(api_client)
         try:
