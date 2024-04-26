@@ -41,7 +41,7 @@ mash_db = db_dir.joinpath("bacteria-refseq", "db.msh")
 referenceseeker_md5 = str(db_dir.joinpath("bacteria-refseq", "downloaded_db.txt"))
 
 if (config["dryrun"] is True) and (GIVEN_REF != "None"):
-    ref_genome = GIVEN_REF
+    ref_genome = Path(GIVEN_REF)
 else:
     ref_genome = output_dir.joinpath("ref_genomes_used", "cluster_1", "ref_genome.seq")
 
