@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.1.1...v1.1.2) (2024-04-26)
+
+
+### Bug Fixes
+
+* Fix type error doing dryrun with fixed reference ([8539c88](https://github.com/RIVM-bioinformatics/juno-snp/commit/8539c88be5e182958ea70e3634fb2328e66fb98d))
+
 ## [1.1.1](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.1.0...v1.1.1) (2024-02-23)
 
 
