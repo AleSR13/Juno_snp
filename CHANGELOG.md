@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.1.2...v1.1.3) (2024-06-27)
+
+
+### Bug Fixes
+
+* updated dependency issues in main environment ([7971c7a](https://github.com/RIVM-bioinformatics/juno-snp/commit/7971c7ad1d95a3de273470e65e44c7b2fe20ff4a))
+
 ## [1.1.2](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.1.1...v1.1.2) (2024-04-26)
 
 
