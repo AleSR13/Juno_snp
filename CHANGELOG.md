@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.1.2...v1.2.0) (2025-01-20)
+
+
+### Features
+
+* allow masking with custom ref ([d436eae](https://github.com/RIVM-bioinformatics/juno-snp/commit/d436eae096c48d3aca0bd973390fa498b27a1cca))
+
+
+### Bug Fixes
+
+* updated dependency issues in main environment ([7971c7a](https://github.com/RIVM-bioinformatics/juno-snp/commit/7971c7ad1d95a3de273470e65e44c7b2fe20ff4a))
+
 ## [1.1.2](https://github.com/RIVM-bioinformatics/juno-snp/compare/v1.1.1...v1.1.2) (2024-04-26)
 
 
