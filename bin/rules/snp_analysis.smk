@@ -93,34 +93,77 @@ snippy --cpus {threads} \
         """
 
 
-rule snp_core:
-    input:
-        samples=get_mapped_per_cluster,
-        ref=output_dir.joinpath(
-            "ref_genomes_used", "cluster_{cluster}", "ref_genome.seq"
-        ),
-    output:
-        res=directory(
-            output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}")
-        ),
-        txt=output_dir.joinpath(
-            "snp_analysis", "snippy-core", "cluster_{cluster}", "cluster_{cluster}.txt"
-        ),
-    message:
-        "Getting SNP core."
-    params:
-        cluster="{cluster}",
-    log:
-        log_dir.joinpath("snp_analysis", "snippy_core", "cluster_{cluster}.log"),
-    conda:
-        "../../envs/snippy.yaml"
-    container:
-        "docker://staphb/snippy:4.6.0-SC2"
-    threads: config["threads"]["snippy"]
-    resources:
-        mem_gb=config["mem_gb"]["snippy"],
-    shell:
-        """
-mkdir -p {output.res}
-snippy-core --ref {input.ref} --prefix {output.res}/cluster_{params.cluster} {input.samples} 2>&1> {log}
-        """
+if config["mask"] == "None":
+
+    rule snp_core:
+        input:
+            samples=get_mapped_per_cluster,
+            ref=output_dir.joinpath(
+                "ref_genomes_used", "cluster_{cluster}", "ref_genome.seq"
+            ),
+        output:
+            res=directory(
+                output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}")
+            ),
+            txt=output_dir.joinpath(
+                "snp_analysis",
+                "snippy-core",
+                "cluster_{cluster}",
+                "cluster_{cluster}.txt",
+            ),
+        message:
+            "Getting SNP core."
+        params:
+            cluster="{cluster}",
+        log:
+            log_dir.joinpath("snp_analysis", "snippy_core", "cluster_{cluster}.log"),
+        conda:
+            "../../envs/snippy.yaml"
+        container:
+            "docker://staphb/snippy:4.6.0-SC2"
+        threads: config["threads"]["snippy"]
+        resources:
+            mem_gb=config["mem_gb"]["snippy"],
+        shell:
+            """
+    mkdir -p {output.res}
+    snippy-core --ref {input.ref} --prefix {output.res}/cluster_{params.cluster} {input.samples} 2>&1> {log}
+            """
+
+else:
+
+    rule snp_core_masked:
+        input:
+            samples=get_mapped_per_cluster,
+            ref=output_dir.joinpath(
+                "ref_genomes_used", "cluster_{cluster}", "ref_genome.seq"
+            ),
+            mask=config["mask"],
+        output:
+            res=directory(
+                output_dir.joinpath("snp_analysis", "snippy-core", "cluster_{cluster}")
+            ),
+            txt=output_dir.joinpath(
+                "snp_analysis",
+                "snippy-core",
+                "cluster_{cluster}",
+                "cluster_{cluster}.txt",
+            ),
+        message:
+            "Getting SNP core."
+        params:
+            cluster="{cluster}",
+        log:
+            log_dir.joinpath("snp_analysis", "snippy_core", "cluster_{cluster}.log"),
+        conda:
+            "../../envs/snippy.yaml"
+        container:
+            "docker://staphb/snippy:4.6.0-SC2"
+        threads: config["threads"]["snippy"]
+        resources:
+            mem_gb=config["mem_gb"]["snippy"],
+        shell:
+            """
+    mkdir -p {output.res}
+    snippy-core --ref {input.ref} --mask {input.mask} --prefix {output.res}/cluster_{params.cluster} {input.samples} 2>&1> {log}
+            """

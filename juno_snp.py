@@ -152,11 +152,17 @@ class JunoSnp(Pipeline):
             action="store_true",
             help="If set, the pipeline will run Snippy with --report option. This requires quite some extra time and storage, especially if there a lot of variants",
         )
+        self.add_argument(
+            "--mask",
+            type=Path,
+            help="BED file that snippy-core should use for masking. Only used if a custom reference is supplied.",
+        )
 
     def _parse_args(self) -> argparse.Namespace:
         args = super()._parse_args()
 
         self.reference: Path = args.reference
+        self.mask: Path = args.mask
         self.db_dir: Path = args.db_dir
         self.ani: float = args.ani
         self.conserved_dna: float = args.conserved_dna
@@ -172,13 +178,19 @@ class JunoSnp(Pipeline):
 
     def setup(self) -> None:
         super().setup()
+        # Don't use mask file if user has not provided a custom ref
+        if self.reference is None:
+            self.mask = None
+
         if self.snakemake_args["use_singularity"]:
+            paths_to_bind = [self.snakemake_args["singularity_args"]]
+            paths_to_bind.append(f"--bind {self.db_dir}:{self.db_dir}")
+            if self.mask != None:
+                paths_to_bind.append(f"--bind {self.mask}:{self.mask}")
+
             self.snakemake_args["singularity_args"] = " ".join(
-                [
-                    self.snakemake_args["singularity_args"],
-                    f"--bind {self.db_dir}:{self.db_dir}",
-                ]  # paths that singularity should be able to read from can be bound by adding to the above list
-            )
+                paths_to_bind
+            )  # paths that singularity should be able to read from can be bound by adding to the above list
 
         with open(
             Path(__file__).parent.joinpath("config/pipeline_parameters.yaml")
@@ -197,6 +209,7 @@ class JunoSnp(Pipeline):
             "exclusion_file": str(self.exclusion_file),
             "db_dir": str(self.db_dir),
             "reference": str(self.reference),
+            "mask": str(self.mask),
             "use_singularity": str(self.snakemake_args["use_singularity"]),
             "dryrun": self.dryrun,
             "referenceseeker": {

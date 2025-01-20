@@ -5,6 +5,7 @@ Organization: Rijksinstituut voor Volksgezondheid en Milieu (RIVM)
 Department: Infektieziekteonderzoek, Diagnostiek en Laboratorium Surveillance (IDS), Bacteriologie (BPD)
 Date: 07-03-2022
 """
+
 #################################################################################
 ##### Import config file, sample_sheet and set output folder names          #####
 #################################################################################
